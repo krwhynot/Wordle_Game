@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Development Environment",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Frontend: Start",
+        "Backend: Start"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Frontend: Start",
+      "type": "npm",
+      "script": "start",
+      "path": "client/",
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: Start",
+      "type": "npm",
+      "script": "dev",
+      "path": "server/",
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy to Azure",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Frontend: Build",
+        "Backend: Deploy"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

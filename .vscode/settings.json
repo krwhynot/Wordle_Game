@@ -1,0 +1,22 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/build": false,
+    "**/coverage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/build": true
+  },
+  "files.associations": {
+    "*.jsx": "javascriptreact",
+    "*.js": "javascript"
+  },
+  "eslint.workingDirectories": [
+    "./client",
+    "./server"
+  ],
+  "jest.disabledWorkspaceFolders": [
+    "server"
+  ]
+}

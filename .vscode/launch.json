@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "name": "Debug Frontend",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/client"
+    },
+    {
+      "name": "Debug Backend",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/index.js",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack Debug",
+      "configurations": ["Debug Frontend", "Debug Backend"],
+      "stopAll": true,
+      "presentation": {
+        "group": "Wordle",
+        "order": 1
+      }
+    }
+  ]
+}
