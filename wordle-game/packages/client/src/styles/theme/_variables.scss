@@ -1,0 +1,91 @@
+// Material 3 Expressive - Turquoise & Tangerine Theme
+
+// ===== Core Colors =====
+$color-primary: #06D6A0;        // Turquoise
+$color-accent: #FFA552;         // Tangerine
+$color-background: #EFF6F5;     // Light Grey-Blue
+$color-surface: #FFFFFF;        // Surface
+$color-error: #FF5252;          // Error
+
+// ===== Text Colors =====
+$color-on-primary: #FFFFFF;
+$color-on-accent: #000000;
+$color-on-background: #1B1B1E;
+$color-on-surface: #1B1B1E;
+$color-on-error: #FFFFFF;
+
+// ===== Game-specific Colors =====
+$color-tile-default: $color-surface;
+$color-tile-correct: $color-primary;
+$color-tile-present: $color-accent;
+$color-tile-absent: #787c7e;
+
+// ===== Spacing =====
+$spacing-unit: 4px;
+$spacing-xs: $spacing-unit;
+$spacing-sm: $spacing-unit * 2;
+$spacing-md: $spacing-unit * 4;
+$spacing-lg: $spacing-unit * 6;
+$spacing-xl: $spacing-unit * 8;
+$spacing-xxl: $spacing-unit * 12;
+
+// ===== Typography =====
+$font-family-primary: 'Roboto', 'Helvetica Neue', sans-serif;
+$font-family-heading: 'Montserrat', 'Roboto', sans-serif;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.875rem;   // 14px
+$font-size-base: 1rem;     // 16px
+$font-size-lg: 1.25rem;    // 20px
+$font-size-xl: 1.5rem;     // 24px
+$font-size-xxl: 2rem;      // 32px
+$font-size-display: 3rem;  // 48px
+
+// ===== Border Radius =====
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+
+// ===== Shadows =====
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+
+// ===== Transitions =====
+$transition-fastest: 100ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-medium: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-springy: 250ms cubic-bezier(0.34, 1.56, 0.64, 1); // Custom springy effect
+
+// ===== Animation Duration =====
+$animation-short: 200ms;
+$animation-medium: 400ms;
+$animation-long: 600ms;
+
+// ===== Breakpoints =====
+$breakpoint-xs: 0;
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1920px;
+
+// ===== Component Sizes =====
+// Game Board
+$tile-size-default: 60px;
+$tile-size-sm: 48px;
+$tile-size-lg: 72px;
+
+// Keyboard
+$key-height: 58px;
+$key-width-default: 40px;
+$key-width-large: 65px; // For Enter/Backspace
+
+// ===== Z-index =====
+$z-index-keyboard: 10;
+$z-index-toast: 1000;
+$z-index-modal: 2000;
