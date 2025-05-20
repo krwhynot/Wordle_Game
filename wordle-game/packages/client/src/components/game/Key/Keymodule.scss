@@ -1,0 +1,67 @@
+// Location: packages/client/src/components/game/Key/Key.module.scss
+
+.key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--key-height);
+  min-width: var(--key-width-default);
+  padding: 0 var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  background-color: var(--key-background-default);
+  color: var(--key-text-default-color);
+  font-family: var(--font-family-primary);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition-fastest), transform var(--transition-fastest);
+  margin: 0 2px;
+
+  // Wide keys (Enter, Backspace)
+  &.wide {
+    min-width: var(--key-width-large);
+    font-size: 0.75rem;
+  }
+
+  // Status variations
+  &.correct {
+    background-color: var(--color-tile-correct);
+    color: var(--color-on-primary);
+  }
+
+  &.present {
+    background-color: var(--color-tile-present);
+    color: var(--color-on-accent);
+  }
+
+  &.absent {
+    background-color: var(--color-tile-absent);
+    color: white;
+  }
+
+  // Interactive states
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+// Responsive adjustments for smaller screens
+@media (max-width: 360px) {
+  .key {
+    min-width: calc(var(--key-width-default) * 0.85);
+    height: calc(var(--key-height) * 0.85);
+    font-size: 0.75rem;
+
+    &.wide {
+      min-width: calc(var(--key-width-large) * 0.85);
+      font-size: 0.7rem;
+    }
+  }
+}

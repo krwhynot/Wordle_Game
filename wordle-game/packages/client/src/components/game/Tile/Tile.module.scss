@@ -1,0 +1,88 @@
+// Location: packages/client/src/components/game/Tile/Tile.module.scss
+
+.tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--tile-size-default);
+  height: var(--tile-size-default);
+  border: 2px solid var(--tile-border-default);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-tile-default);
+  color: var(--color-on-surface);
+  font-family: var(--font-family-primary);
+  font-size: clamp(1.5rem, 7vw, 2rem);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  user-select: none;
+  position: relative;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+
+  // Important for 3D flip effect
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+
+  // Status-specific styles
+  &.empty {
+    background-color: var(--color-tile-default);
+    border-color: var(--tile-border-default);
+  }
+
+  &.active {
+    background-color: var(--color-tile-default);
+    border-color: var(--color-primary);
+    border-width: 2px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  &.filled {
+    background-color: var(--color-tile-default);
+    border-color: var(--tile-border-default);
+  }
+
+  &.correct {
+    background-color: var(--color-tile-correct);
+    border-color: var(--color-tile-correct);
+    color: var(--color-on-primary);
+  }
+
+  &.present {
+    background-color: var(--color-tile-present);
+    border-color: var(--color-tile-present);
+    color: var(--color-on-accent);
+  }
+
+  &.absent {
+    background-color: var(--color-tile-absent);
+    border-color: var(--color-tile-absent);
+    color: var(--color-on-primary);
+  }
+
+  // Animation classes
+  &.revealing {
+    animation: flip var(--animation-long) var(--transition-medium);
+  }
+
+  &.pop {
+    animation: pop var(--animation-short) var(--transition-springy);
+  }
+}
+
+// Responsive adjustments for smaller screens
+@media (max-width: 360px) {
+  .tile {
+    width: calc(var(--tile-size-default) * 0.85);
+    height: calc(var(--tile-size-default) * 0.85);
+    font-size: 1.4rem;
+  }
+}
+
+// Pulse animation for the active tile
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(6, 214, 160, 0.2);
+  }
+}

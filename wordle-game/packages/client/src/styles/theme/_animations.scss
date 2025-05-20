@@ -1,97 +1,151 @@
-// Import variables to convert to CSS custom properties
-@import "./variables";
+// Material 3 Expressive - Wordle Animations
+// Location: packages/client/src/styles/theme/_animations.scss
 
-:root {
-  // ===== Core Colors =====
-  --color-primary: #{$color-primary};
-  --color-accent: #{$color-accent};
-  --color-background: #{$color-background};
-  --color-surface: #{$color-surface};
-  --color-error: #{$color-error};
+/* ===== Keyframes Definitions ===== */
 
-  // ===== Text Colors =====
-  --color-on-primary: #{$color-on-primary};
-  --color-on-accent: #{$color-on-accent};
-  --color-on-background: #{$color-on-background};
-  --color-on-surface: #{$color-on-surface};
-  --color-on-error: #{$color-on-error};
+// Tile Flip (for revealing letter status)
+@keyframes flip {
+  0% {
+    transform: rotateX(0deg);
+    background-color: var(--color-tile-default);
+    border-color: var(--tile-border-default);
+  }
 
-  // ===== Game-specific Colors =====
-  --color-tile-default: #{$color-tile-default};
-  --color-tile-correct: #{$color-tile-correct};
-  --color-tile-present: #{$color-tile-present};
-  --color-tile-absent: #{$color-tile-absent};
+  45% {
+    transform: rotateX(90deg);
+    background-color: var(--color-tile-default);
+    border-color: var(--tile-border-default);
+  }
 
-  // ===== Spacing =====
-  --spacing-unit: #{$spacing-unit};
-  --spacing-xs: #{$spacing-xs};
-  --spacing-sm: #{$spacing-sm};
-  --spacing-md: #{$spacing-md};
-  --spacing-lg: #{$spacing-lg};
-  --spacing-xl: #{$spacing-xl};
-  --spacing-xxl: #{$spacing-xxl};
+  55% {
+    transform: rotateX(90deg);
+    // Color changes here based on status classes
+  }
 
-  // ===== Typography =====
-  --font-family-primary: #{$font-family-primary};
-  --font-family-heading: #{$font-family-heading};
-
-  --font-weight-regular: #{$font-weight-regular};
-  --font-weight-medium: #{$font-weight-medium};
-  --font-weight-bold: #{$font-weight-bold};
-
-  --font-size-xs: #{$font-size-xs};
-  --font-size-sm: #{$font-size-sm};
-  --font-size-base: #{$font-size-base};
-  --font-size-lg: #{$font-size-lg};
-  --font-size-xl: #{$font-size-xl};
-  --font-size-xxl: #{$font-size-xxl};
-  --font-size-display: #{$font-size-display};
-
-  // ===== Border Radius =====
-  --border-radius-sm: #{$border-radius-sm};
-  --border-radius-md: #{$border-radius-md};
-  --border-radius-lg: #{$border-radius-lg};
-  --border-radius-xl: #{$border-radius-xl};
-
-  // ===== Shadows =====
-  --shadow-sm: #{$shadow-sm};
-  --shadow-md: #{$shadow-md};
-  --shadow-lg: #{$shadow-lg};
-
-  // ===== Transitions =====
-  --transition-fastest: #{$transition-fastest};
-  --transition-fast: #{$transition-fast};
-  --transition-medium: #{$transition-medium};
-  --transition-springy: #{$transition-springy};
-
-  // ===== Animation Duration =====
-  --animation-short: #{$animation-short};
-  --animation-medium: #{$animation-medium};
-  --animation-long: #{$animation-long};
-
-  // ===== Component Sizes =====
-  --tile-size-default: #{$tile-size-default};
-  --tile-size-sm: #{$tile-size-sm};
-  --tile-size-lg: #{$tile-size-lg};
-
-  --key-height: #{$key-height};
-  --key-width-default: #{$key-width-default};
-  --key-width-large: #{$key-width-large};
+  100% {
+    transform: rotateX(0deg);
+    // Color is determined by the status class
+  }
 }
 
-// Dark mode theme
-[data-theme="dark"] {
-  --color-primary: #{$color-primary};  // Keep same primary for consistency
-  --color-accent: #{$color-accent};    // Keep same accent for consistency
-  --color-background: #1E1E22;         // Dark background
-  --color-surface: #2C2C30;            // Dark surface
-  --color-on-background: #FFFFFF;      // White text on dark background
-  --color-on-surface: #F0F0F0;         // Light text on dark surface
+// Pop Animation (when letter is typed)
+@keyframes pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
 
-  --tile-background-default: #2C2C30;  // Dark tile background
-  --tile-border-default: #3A3A3C;      // Darker border
+  50% {
+    transform: scale(1.1);
+  }
 
-  // Adjust the absent tile color to fit dark theme
-  --color-tile-absent: #3A3A3C;
-  --tile-text-absent: #E4E4E6;
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Shake Animation (for invalid words)
+@keyframes shake {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  50% { transform: translateX(-6px); }
+  70% { transform: translateX(6px); }
+  90% { transform: translateX(-6px); }
+  100% { transform: translateX(0); }
+}
+
+// Toast/Notification Slide In
+@keyframes slideIn {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Toast/Notification Slide Out
+@keyframes slideOut {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+// Bounce Animation (for celebratory effects)
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+// Fade In Animation
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+// Fade Out Animation
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ===== Animation Utility Classes ===== */
+
+// Tile animations
+.tile-flip {
+  animation: flip var(--animation-long) var(--transition-medium);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.tile-pop {
+  animation: pop var(--animation-short) var(--transition-springy);
+}
+
+// Row animations
+.row-shake {
+  animation: shake var(--animation-medium) cubic-bezier(.36, .07, .19, .97) both;
+}
+
+// Toast/notification animations
+.toast-slide-in {
+  animation: slideIn var(--animation-short) var(--transition-medium);
+}
+
+.toast-slide-out {
+  animation: slideOut var(--animation-short) var(--transition-medium);
+}
+
+// General purpose animations
+.bounce {
+  animation: bounce var(--animation-medium) var(--transition-springy);
+}
+
+.fade-in {
+  animation: fadeIn var(--animation-short) var(--transition-medium);
+}
+
+.fade-out {
+  animation: fadeOut var(--animation-short) var(--transition-medium);
+}
+
+/* ===== Animation Delay Utilities ===== */
+
+// Used for staggered animations like revealing tiles one by one
+@for $i from 1 through 5 {
+  .delay-#{$i} {
+    animation-delay: 100ms * $i;
+  }
 }
