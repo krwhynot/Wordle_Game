@@ -17,7 +17,7 @@ export class WordService {
 
       // Generate a seed based on today's date
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      today.setUTCHours(0, 0, 0, 0);
       const seed = generateDateSeed(today);
 
       // Find word based on seed

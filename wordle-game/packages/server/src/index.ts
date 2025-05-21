@@ -18,7 +18,7 @@ const sampleWords = [
 /**
  * Initialize the server
  */
-async function initialize() {
+export async function initialize() {
   try {
     // Connect to database
     await connectToDatabase();
