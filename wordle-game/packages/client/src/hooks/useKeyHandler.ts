@@ -24,16 +24,17 @@ function useKeyHandler({
 
     const key = event.key;
 
-    // For letter keys (single character), normalize to uppercase
-    if (key.length === 1 && /^[a-zA-Z]$/.test(key)) {
-      setLastKeyPressed(key.toUpperCase());
-      onKeyDown?.(key.toUpperCase());
+    // Determine if the key is a letter
+    const isLetter = key.length === 1 && /^[a-zA-Z]$/.test(key);
+    const normalizedKey = isLetter ? key.toUpperCase() : key;
+
+    // Check if the key is allowed. If it's a letter, check its uppercase version.
+    if (!allowedKeys.includes(normalizedKey)) {
+      return;
     }
-    // For special keys (Backspace, Enter), pass as is if in allowed keys
-    else if (allowedKeys.includes(key)) {
-      setLastKeyPressed(key);
-      onKeyDown?.(key);
-    }
+
+    setLastKeyPressed(normalizedKey);
+    onKeyDown?.(normalizedKey);
   }, [isEnabled, onKeyDown, allowedKeys]);
 
   // Set up event listeners
