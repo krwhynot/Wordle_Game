@@ -1,0 +1,17 @@
+@import '../theme/variables';
+
+.game-board {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 6px;
+  padding: var(--spacing-md);
+  width: clamp(280px, 90vw, 350px);
+  max-height: 420px;
+  margin: 0 auto;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}

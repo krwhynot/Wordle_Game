@@ -6,6 +6,14 @@
 @import './theme/css-variables';
 @import './theme/animations';
 
+// Component styles
+@import './components/tile';
+@import './components/gameboard';
+@import './components/keyboard';
+@import './components/layout';
+@import './components/modal';
+@import './components/toast';
+
 // Global base styles
 *, *::before, *::after {
   box-sizing: border-box;

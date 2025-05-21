@@ -1,6 +1,6 @@
 // Location: packages/client/src/context/GameContext/GameContext.tsx
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { GameContextType, GameState, Guess, EvaluationResult, GameStatus } from './types';
+import { GameContextType, GameState, Guess, EvaluationResult, GameStatus } from '../../types/game';
 
 // Constants
 const WORD_LENGTH = 5;
@@ -237,7 +237,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     const evaluation: EvaluationResult[] = Array(WORD_LENGTH).fill('absent');
 
     // Create a map of available letters in the solution
-    const solutionMap = solution.split('').reduce<Record<string, number>>((map, letter) => {
+    const solutionMap = solution.split('').reduce<Record<string, number>>((map: Record<string, number>, letter: string) => {
       map[letter] = (map[letter] || 0) + 1;
       return map;
     }, {});

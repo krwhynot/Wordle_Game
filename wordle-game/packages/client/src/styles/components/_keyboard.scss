@@ -1,0 +1,74 @@
+@import '../theme/variables';
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--spacing-md);
+  margin-top: auto;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.keyboard-key {
+  height: var(--key-height);
+  min-width: 44px; // Accessibility minimum touch target
+  flex-grow: 1;
+  max-width: var(--key-width-default);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(0.8rem, 3vw, 1.1rem);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  border-radius: var(--border-radius-md);
+  background-color: var(--key-background-default);
+  color: var(--key-text-default-color);
+  transition: transform var(--transition-fast),
+              background-color var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+
+  &.keyboard-key-special {
+    flex-grow: 1.5;
+    max-width: var(--key-width-large);
+    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+  }
+
+  &:active {
+    transform: scale(0.92);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  // Status-specific styles
+  &.keyboard-key-correct {
+    background-color: var(--key-background-correct);
+    color: var(--key-text-correct);
+    border-color: var(--key-border-correct);
+  }
+
+  &.keyboard-key-present {
+    background-color: var(--key-background-present);
+    color: var(--key-text-present);
+    border-color: var(--key-border-present);
+  }
+
+  &.keyboard-key-absent {
+    background-color: var(--key-background-absent);
+    color: var(--key-text-absent);
+    border-color: var(--key-border-absent);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    height: clamp(50px, 12vw, 58px);
+  }
+}
