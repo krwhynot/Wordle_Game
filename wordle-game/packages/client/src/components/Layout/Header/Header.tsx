@@ -1,7 +1,7 @@
 // Location: packages/client/src/components/layout/Header/Header.tsx
 import React from 'react';
-import { useTheme } from '../../../context/ThemeContext';
-import { useGame } from '../../../context/GameContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useGame } from '@/contexts/GameContext';
 import styles from './Header.module.scss';
 
 const Header: React.FC = () => {

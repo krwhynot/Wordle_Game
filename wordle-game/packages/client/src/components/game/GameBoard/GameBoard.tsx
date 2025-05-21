@@ -1,7 +1,7 @@
 // Location: packages/client/src/components/game/GameBoard/GameBoard.tsx
 import React from 'react';
 import Row from '../Row';
-import { useGame } from '../../../context/GameContext';
+import { useGame } from '@/contexts/GameContext';
 import styles from './GameBoard.module.scss';
 
 // Constants

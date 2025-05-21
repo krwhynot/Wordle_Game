@@ -1,11 +1,11 @@
 // Location: packages/client/src/App.tsx
 import React from 'react';
-import { ThemeProvider } from './context/ThemeContext';
-import { GameProvider } from './context/GameContext';
-import Header from './components/Layout/Header';
-import GameBoard from './components/game/GameBoard';
-import Keyboard from './components/game/Keyboard';
-import './styles/main.scss';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { GameProvider } from '@/contexts/GameContext';
+import Header from '@/components/layout/Header';
+import GameBoard from '@/components/game/GameBoard';
+import Keyboard from '@/components/game/Keyboard';
+import '@/styles/main.scss';
 
 const App: React.FC = () => {
   return (

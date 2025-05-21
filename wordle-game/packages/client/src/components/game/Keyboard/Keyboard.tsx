@@ -1,7 +1,7 @@
 // Location: packages/client/src/components/game/Keyboard/Keyboard.tsx
 import React from 'react';
 import Key from '../Key';
-import { useGame } from '../../../context/GameContext';
+import { useGame } from '@/contexts/GameContext';
 import styles from './Keyboard.module.scss';
 
 // Keyboard layout
