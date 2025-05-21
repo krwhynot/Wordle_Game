@@ -1,79 +1,65 @@
-// Location: packages/server/src/index.ts
-import express from 'express';
-import * as dotenv from 'dotenv'; // Corrected import
-import {
-  apiLimiter,
-  wordValidationLimiter,
-  errorHandler,
-  notFoundHandler, // Renamed from handle404 for clarity if it's a general 404 handler
-  configureSecurityMiddleware,
-  validateWordGuess
-} from './middleware';
+import app from './app';
+import { connectToDatabase, closeDatabaseConnection } from './config/db';
+import wordService from './services/wordService';
+import { logger } from './utils/logger';
 
-// Load environment variables
-dotenv.config(); // Call config right after import
-
-// Initialize Express app
-const app = express();
+// Port from environment variable or default
 const PORT = process.env.PORT || 3001;
 
-// Configure security middleware (CORS, helmet)
-configureSecurityMiddleware(app);
+// Sample words for development
+const sampleWords = [
+  'react', 'cloud', 'azure', 'board', 'chess', 'earth',
+  'flame', 'globe', 'heart', 'image', 'joker', 'knife',
+  'lemon', 'music', 'night', 'ocean', 'piano', 'queen',
+  'radio', 'storm', 'tiger', 'unity', 'video', 'water',
+  'yacht', 'zebra'
+];
 
-// Parse JSON bodies
-app.use(express.json());
+/**
+ * Initialize the server
+ */
+async function initialize() {
+  try {
+    // Connect to database
+    await connectToDatabase();
 
-// Apply general rate limiting
-app.use('/api', apiLimiter);
+    // Initialize word list if empty
+    await wordService.initializeWordList(sampleWords);
 
-// Basic routes
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: {
-      status: 'healthy',
-      environment: process.env.NODE_ENV || 'development',
-      timestamp: new Date().toISOString()
-    }
-  });
-});
-
-// Example word validation endpoint with stricter rate limiting and validation
-app.post('/api/word/validate', wordValidationLimiter, validateWordGuess(), (req, res) => {
-  const { word } = req.body;
-
-  // Here we would check if the word exists in our dictionary
-  // This is just a placeholder implementation
-  const isValidWord = true; // This would be a real dictionary check
-
-  if (!isValidWord) {
-    return res.status(400).json({
-      success: false,
-      error: 'Not in word list'
+    // Start server
+    app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
     });
+
+    // Handle shutdown
+    setupGracefulShutdown();
+  } catch (error) {
+    logger.error('Server initialization failed:', error);
+    process.exit(1);
   }
+}
 
-  // Return success
-  res.status(200).json({
-    success: true,
-    data: {
-      word,
-      valid: true
-    }
+/**
+ * Setup graceful shutdown
+ */
+function setupGracefulShutdown() {
+  // Handle termination signals
+  ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
+    process.on(signal, async () => {
+      logger.info(`${signal} received, shutting down gracefully`);
+
+      // Close database connection
+      await closeDatabaseConnection();
+
+      // Exit process
+      process.exit(0);
+    });
   });
-});
+}
 
-// Catch 404 and forward to error handler
-app.use(notFoundHandler);
-
-// Global error handler
-app.use(errorHandler);
-
-// Start server
+// Start the server
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  initialize();
 }
 
 export default app;

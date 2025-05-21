@@ -1,17 +1,18 @@
 // Location: packages/client/src/context/GameContext/GameContext.tsx
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { GameContextType, GameState, Guess, EvaluationResult, GameStatus } from '../../types/game';
+import api from '../../services/api';
 
 // Constants
 const WORD_LENGTH = 5;
 const MAX_ATTEMPTS = 6;
 
-// Hard-coded solution for development (will be fetched from API later)
-const SOLUTION = "react";
+// Default solution as fallback if API fails
+const DEFAULT_SOLUTION = "react";
 
 // Initial game state
 const initialState: GameState = {
-  solution: SOLUTION,
+  solution: DEFAULT_SOLUTION,
   guesses: [],
   currentGuess: '',
   gameStatus: 'playing',
@@ -141,13 +142,33 @@ interface GameProviderProps {
 
 export const GameProvider: React.FC<GameProviderProps> = ({
   children,
-  solution = SOLUTION
+  solution
 }) => {
-  // Initialize state with the provided solution
+  // Initialize state with either provided solution or to be fetched from API
   const [state, dispatch] = useReducer(gameReducer, {
     ...initialState,
-    solution: solution.toLowerCase()
+    solution: solution ? solution.toLowerCase() : DEFAULT_SOLUTION
   });
+
+  // Fetch the daily word from the API
+  useEffect(() => {
+    if (!solution) {
+      const fetchDailyWord = async () => {
+        try {
+          const dailyWord = await api.getDailyWord();
+          dispatch({
+            type: 'LOAD_GAME',
+            payload: { solution: dailyWord.toLowerCase() }
+          });
+        } catch (error) {
+          console.error('Error fetching daily word:', error);
+          // Keep the default word if API fails
+        }
+      };
+
+      fetchDailyWord();
+    }
+  }, [solution]);
 
   // Load game from localStorage on mount
   useEffect(() => {
@@ -268,9 +289,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({
       return;
     }
 
-    // In a real implementation, we would validate the word against a dictionary API
-    // For now, we'll just check if the word is long enough
-    const isValidWord = true; // Replace with API call later
+    // Validate the word against our API
+    const isValidWord = await api.validateWord(state.currentGuess);
 
     if (!isValidWord) {
       dispatch({
