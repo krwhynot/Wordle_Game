@@ -1,25 +1,55 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import React from 'react';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { setViewportSize, VIEWPORT_SIZES } from '../../testUtils';
 import GameBoard from '../../../components/game/GameBoard';
-import { TileStatus } from '../../../components/game/Tile';
+import { GameProvider, useGame } from '../../../contexts/GameContext/GameContext';
+import { EvaluationResult, GameContextType } from 'shared';
+
+// Mock the useGame hook and GameProvider
+vi.mock('../../../contexts/GameContext/GameContext', () => ({
+  useGame: vi.fn(),
+  GameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>, // Mock GameProvider to render children directly
+}));
+
+const mockUseGame = useGame as ReturnType<typeof vi.fn>;
+
+const renderWithGameContext = (initialState: Partial<GameContextType> = {}) => {
+  const mockGameContext: GameContextType = {
+    solution: 'TESTS',
+    guesses: [],
+    currentGuess: '',
+    gameStatus: 'playing',
+    isRevealing: false,
+    invalidGuess: { isInvalid: false, rowIndex: -1 },
+    isGameLoaded: true,
+    addLetter: vi.fn(),
+    removeLetter: vi.fn(),
+    submitGuess: vi.fn(),
+    getLetterStatus: vi.fn(),
+    resetGame: vi.fn(),
+    ...initialState,
+  };
+
+  mockUseGame.mockReturnValue(mockGameContext);
+
+  return render(
+    <GameProvider> {/* Use the mocked GameProvider */}
+      <GameBoard />
+    </GameProvider>
+  );
+};
 
 describe('GameBoard Component', () => {
   afterEach(() => {
     cleanup();
+    vi.clearAllMocks();
   });
 
   // Tests for visual verification
   describe('Visual Rendering', () => {
     it('renders a game board with 6 rows', () => {
-      render(
-        <GameBoard
-          guesses={[]}
-          evaluations={[]}
-          currentRow={0}
-          currentGuess=""
-        />
-      );
+      renderWithGameContext();
 
       const boardElement = screen.getByRole('grid');
       const rowElements = screen.getAllByRole('row');
@@ -29,14 +59,10 @@ describe('GameBoard Component', () => {
     });
 
     it('renders with current guess in the current row', () => {
-      render(
-        <GameBoard
-          guesses={['REACT']}
-          evaluations={[['correct', 'present', 'absent', 'correct', 'absent']]}
-          currentRow={1}
-          currentGuess="WO"
-        />
-      );
+      renderWithGameContext({
+        guesses: [{ word: 'REACT', evaluation: ['correct', 'present', 'absent', 'correct', 'absent'] as EvaluationResult[] }],
+        currentGuess: 'WO',
+      });
 
       const allTiles = screen.getAllByRole('gridcell');
 
@@ -58,18 +84,11 @@ describe('GameBoard Component', () => {
     });
 
     it('applies correct evaluation classes to guessed rows', () => {
-      const evaluations: TileStatus[][] = [
-        ['correct', 'present', 'absent', 'absent', 'present']
-      ];
+      const evaluations: EvaluationResult[] = ['correct', 'present', 'absent', 'absent', 'present'];
 
-      render(
-        <GameBoard
-          guesses={['HELLO']}
-          evaluations={evaluations}
-          currentRow={1}
-          currentGuess=""
-        />
-      );
+      renderWithGameContext({
+        guesses: [{ word: 'HELLO', evaluation: evaluations }],
+      });
 
       const firstRowTiles = screen.getAllByRole('gridcell').slice(0, 5);
 
@@ -81,14 +100,9 @@ describe('GameBoard Component', () => {
     });
 
     it('renders empty rows for future guesses', () => {
-      render(
-        <GameBoard
-          guesses={['HELLO']}
-          evaluations={[['correct', 'present', 'absent', 'absent', 'present']]}
-          currentRow={1}
-          currentGuess=""
-        />
-      );
+      renderWithGameContext({
+        guesses: [{ word: 'HELLO', evaluation: ['correct', 'present', 'absent', 'absent', 'present'] as EvaluationResult[] }],
+      });
 
       // Get all tiles and check rows 3-6 (indices 10-29)
       const allTiles = screen.getAllByRole('gridcell');
@@ -104,14 +118,7 @@ describe('GameBoard Component', () => {
   // Tests for accessibility
   describe('Accessibility', () => {
     it('has appropriate aria attributes', () => {
-      render(
-        <GameBoard
-          guesses={[]}
-          evaluations={[]}
-          currentRow={0}
-          currentGuess=""
-        />
-      );
+      renderWithGameContext();
 
       const boardElement = screen.getByRole('grid');
       expect(boardElement).toHaveAttribute('aria-label', 'Wordle game board');
@@ -131,14 +138,10 @@ describe('GameBoard Component', () => {
     it('adapts to mobile viewport size', () => {
       cleanupViewport = setViewportSize(VIEWPORT_SIZES.MOBILE.width, VIEWPORT_SIZES.MOBILE.height);
 
-      render(
-        <GameBoard
-          guesses={['HELLO']}
-          evaluations={[['correct', 'present', 'absent', 'absent', 'present']]}
-          currentRow={1}
-          currentGuess="WO"
-        />
-      );
+      renderWithGameContext({
+        guesses: [{ word: 'HELLO', evaluation: ['correct', 'present', 'absent', 'absent', 'present'] as EvaluationResult[] }],
+        currentGuess: 'WO',
+      });
 
       const boardElement = screen.getByRole('grid');
       expect(boardElement).toBeInTheDocument();
@@ -148,14 +151,10 @@ describe('GameBoard Component', () => {
     it('adapts to tablet viewport size', () => {
       cleanupViewport = setViewportSize(VIEWPORT_SIZES.TABLET.width, VIEWPORT_SIZES.TABLET.height);
 
-      render(
-        <GameBoard
-          guesses={['HELLO']}
-          evaluations={[['correct', 'present', 'absent', 'absent', 'present']]}
-          currentRow={1}
-          currentGuess="WO"
-        />
-      );
+      renderWithGameContext({
+        guesses: [{ word: 'HELLO', evaluation: ['correct', 'present', 'absent', 'absent', 'present'] as EvaluationResult[] }],
+        currentGuess: 'WO',
+      });
 
       const boardElement = screen.getByRole('grid');
       expect(boardElement).toBeInTheDocument();
@@ -165,14 +164,10 @@ describe('GameBoard Component', () => {
     it('adapts to desktop viewport size', () => {
       cleanupViewport = setViewportSize(VIEWPORT_SIZES.DESKTOP.width, VIEWPORT_SIZES.DESKTOP.height);
 
-      render(
-        <GameBoard
-          guesses={['HELLO']}
-          evaluations={[['correct', 'present', 'absent', 'absent', 'present']]}
-          currentRow={1}
-          currentGuess="WO"
-        />
-      );
+      renderWithGameContext({
+        guesses: [{ word: 'HELLO', evaluation: ['correct', 'present', 'absent', 'absent', 'present'] as EvaluationResult[] }],
+        currentGuess: 'WO',
+      });
 
       const boardElement = screen.getByRole('grid');
       expect(boardElement).toBeInTheDocument();

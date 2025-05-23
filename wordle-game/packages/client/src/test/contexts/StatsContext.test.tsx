@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { StatsProvider, useStats } from '../../contexts/StatsContext/StatsContext';
 import { GameStatistics } from '../../contexts/StatsContext/types';
 
@@ -26,7 +26,6 @@ Object.defineProperty(window, 'localStorage', {
 
 // Mock Date
 const FIXED_DATE = new Date('2025-03-15T12:00:00Z');
-const NEXT_DATE = new Date('2025-03-16T12:00:00Z');
 
 // Test component that uses the stats context
 const TestComponent = () => {

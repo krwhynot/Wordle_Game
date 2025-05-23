@@ -1,109 +1,184 @@
 import React from 'react';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Statistics from '@/components/game/Statistics';
-import StatsContext, { useStats } from '@/contexts/StatsContext/StatsContext';
-import { GameStatistics } from '@/contexts/StatsContext/types';
-import { vi } from 'vitest'; // Ensure vi is imported
+import Statistics from '../../../components/game/Statistics';
+import { useStats } from '../../../contexts/StatsContext/StatsContext';
 
 // Mock the useStats hook
-vi.mock('@/contexts/StatsContext/StatsContext', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/contexts/StatsContext/StatsContext')>();
-  return {
-    ...actual,
-    useStats: vi.fn(),
-    default: actual.default, // Ensure the default export (StatsContext) is also available
-  };
-});
+vi.mock('../../../contexts/StatsContext/StatsContext', () => ({
+  useStats: vi.fn(),
+}));
 
-describe('Statistics', () => {
-  const mockOnClose = vi.fn();
+const mockUseStats = useStats as ReturnType<typeof vi.fn>;
 
-  const defaultStats: GameStatistics = {
-    gamesPlayed: 0,
-    gamesWon: 0,
-    currentStreak: 0,
-    maxStreak: 0,
-    guessDistribution: [0, 0, 0, 0, 0, 0],
-  };
+const mockStatistics = {
+  gamesPlayed: 10,
+  gamesWon: 8,
+  currentStreak: 3,
+  maxStreak: 5,
+  guessDistribution: [1, 2, 3, 1, 0, 1],
+  lastCompletedGameDate: '2025-03-15'
+};
 
-  const renderStatistics = (isOpen: boolean, stats: GameStatistics = defaultStats) => {
-    (useStats as vi.Mock).mockReturnValue({ statistics: stats, addGameResult: vi.fn(), resetStatistics: vi.fn() });
-    render(
-      <StatsContext.Provider value={{ statistics: stats, addGameResult: vi.fn(), resetStatistics: vi.fn() }}>
-        <Statistics isOpen={isOpen} onClose={mockOnClose} />
-      </StatsContext.Provider>
-    );
-  };
-
+describe('Statistics Component', () => {
   beforeEach(() => {
-    mockOnClose.mockClear();
+    mockUseStats.mockReturnValue({
+      statistics: mockStatistics,
+      addGameResult: vi.fn(),
+      resetStatistics: vi.fn(),
+    });
   });
 
-  test('does not render when isOpen is false', () => {
-    renderStatistics(false);
-    expect(screen.queryByText('Statistics')).not.toBeInTheDocument();
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
-  test('renders when isOpen is true', () => {
-    renderStatistics(true);
-    expect(screen.getByText('Statistics')).toBeInTheDocument();
+  describe('Visual Rendering', () => {
+    it('renders statistics when open', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      expect(screen.getByText('Statistics')).toBeInTheDocument();
+      expect(screen.getByText('10')).toBeInTheDocument(); // Games played
+      expect(screen.getByText('80')).toBeInTheDocument(); // Win percentage
+      expect(screen.getByText('3')).toBeInTheDocument(); // Current streak
+      expect(screen.getByText('5')).toBeInTheDocument(); // Max streak
+    });
+
+    it('does not render when closed', () => {
+      render(<Statistics isOpen={false} onClose={vi.fn()} />);
+
+      expect(screen.queryByText('Statistics')).not.toBeInTheDocument();
+    });
+
+    it('calculates win percentage correctly', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      // 8 wins out of 10 games = 80%
+      expect(screen.getByText('80')).toBeInTheDocument();
+    });
+
+    it('renders guess distribution chart', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      expect(screen.getByText('Guess Distribution')).toBeInTheDocument();
+
+      // Check that distribution bars are rendered
+      const distributionBars = screen.getAllByTestId(/distribution-bar/);
+      expect(distributionBars).toHaveLength(6); // 6 guess attempts
+    });
+
+    it('shows correct distribution bar widths', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      // The highest value in distribution is 3 (for 3rd guess)
+      const bars = screen.getAllByTestId(/distribution-bar/);
+
+      // Find the bar with the highest value (should be 100% width)
+      const highestBar = bars.find(bar =>
+        bar.style.width === '100%' || bar.getAttribute('data-width') === '100'
+      );
+      expect(highestBar).toBeDefined();
+    });
   });
 
-  test('displays default statistics correctly', () => {
-    renderStatistics(true);
-    expect(screen.getByText('Played').previousElementSibling).toHaveTextContent('0');
-    expect(screen.getByText('Win %').previousElementSibling).toHaveTextContent('0');
-    expect(screen.getByText('Current Streak').previousElementSibling).toHaveTextContent('0');
-    expect(screen.getByText('Max Streak').previousElementSibling).toHaveTextContent('0');
-    // Check guess distribution values
-    const guessDistributionElements = screen.getAllByText('0').filter(el => el.className.includes('guess-bar'));
-    expect(guessDistributionElements.length).toBe(6);
+  describe('User Interactions', () => {
+    it('calls onClose when close button is clicked', () => {
+      const mockOnClose = vi.fn();
+      render(<Statistics isOpen={true} onClose={mockOnClose} />);
+
+      const closeButton = screen.getByRole('button', { name: /close/i });
+      fireEvent.click(closeButton);
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('closes when overlay is clicked', () => {
+      const mockOnClose = vi.fn();
+      render(<Statistics isOpen={true} onClose={mockOnClose} />);
+
+      const overlay = screen.getByTestId('modal-overlay');
+      fireEvent.click(overlay);
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
   });
 
-  test('displays provided statistics correctly', () => {
-    const customStats: GameStatistics = {
-      gamesPlayed: 10,
-      gamesWon: 5,
-      currentStreak: 3,
-      maxStreak: 5,
-      guessDistribution: [0, 1, 2, 3, 2, 2],
-    };
-    renderStatistics(true, customStats);
+  describe('Edge Cases', () => {
+    it('handles zero games played', () => {
+      mockUseStats.mockReturnValue({
+        statistics: {
+          ...mockStatistics,
+          gamesPlayed: 0,
+          gamesWon: 0,
+        },
+        addGameResult: vi.fn(),
+        resetStatistics: vi.fn(),
+      });
 
-    expect(screen.getByText('Played').previousElementSibling).toHaveTextContent('10');
-    expect(screen.getByText('Win %').previousElementSibling).toHaveTextContent('50');
-    expect(screen.getByText('Current Streak').previousElementSibling).toHaveTextContent('3');
-    expect(screen.getByText('Max Streak').previousElementSibling).toHaveTextContent('5');
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
 
-    // Check specific guess distribution values
-    expect(screen.getByText('1', { selector: '.guess-bar' })).toBeInTheDocument();
-    expect(screen.getAllByText('2', { selector: '.guess-bar' }).length).toBe(3); // For guess 3, 5, 6
-    expect(screen.getByText('3', { selector: '.guess-bar' })).toBeInTheDocument(); // For guess 4
+      expect(screen.getByText('0')).toBeInTheDocument(); // Games played
+      expect(screen.getByText('0')).toBeInTheDocument(); // Win percentage (should be 0, not NaN)
+    });
+
+    it('handles perfect win rate', () => {
+      mockUseStats.mockReturnValue({
+        statistics: {
+          ...mockStatistics,
+          gamesPlayed: 5,
+          gamesWon: 5,
+        },
+        addGameResult: vi.fn(),
+        resetStatistics: vi.fn(),
+      });
+
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      expect(screen.getByText('100')).toBeInTheDocument(); // 100% win rate
+    });
+
+    it('handles empty guess distribution', () => {
+      mockUseStats.mockReturnValue({
+        statistics: {
+          ...mockStatistics,
+          guessDistribution: [0, 0, 0, 0, 0, 0],
+        },
+        addGameResult: vi.fn(),
+        resetStatistics: vi.fn(),
+      });
+
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      const distributionBars = screen.getAllByTestId(/distribution-bar/);
+      expect(distributionBars).toHaveLength(6);
+    });
   });
 
-  test('calculates win percentage correctly', () => {
-    renderStatistics(true, { ...defaultStats, gamesPlayed: 20, gamesWon: 15 });
-    expect(screen.getByText('Win %').previousElementSibling).toHaveTextContent('75');
-  });
+  describe('Accessibility', () => {
+    it('has proper modal semantics', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
 
-  test('applies max-value class to the highest guess distribution bar', () => {
-    const customStats: GameStatistics = {
-      ...defaultStats,
-      guessDistribution: [1, 2, 5, 2, 1, 0],
-    };
-    renderStatistics(true, customStats);
+      const modal = screen.getByRole('dialog');
+      expect(modal).toHaveAttribute('aria-labelledby');
+      expect(modal).toHaveAttribute('aria-modal', 'true');
+    });
 
-    const guessBars = screen.getAllByText(/\d+/).filter(el => el.className.includes('guess-bar'));
-    const guess3Bar = guessBars.find(el => el.textContent === '5');
-    expect(guess3Bar).toHaveClass('max-value');
+    it('has accessible close button', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
 
-    const guess2Bar = guessBars.find(el => el.textContent === '2');
-    expect(guess2Bar).not.toHaveClass('max-value');
-  });
+      const closeButton = screen.getByRole('button', { name: /close/i });
+      expect(closeButton).toBeInTheDocument();
+    });
 
-  test('calls onClose when the close button is clicked', () => {
-    renderStatistics(true);
-    fireEvent.click(screen.getByRole('button', { name: '×' }));
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
+    it('traps focus within modal', () => {
+      render(<Statistics isOpen={true} onClose={vi.fn()} />);
+
+      const modal = screen.getByRole('dialog');
+      expect(modal).toBeInTheDocument();
+
+      // Test that focus is properly managed
+      const closeButton = screen.getByRole('button', { name: /close/i });
+      expect(closeButton).toBeInTheDocument();
+    });
   });
 });

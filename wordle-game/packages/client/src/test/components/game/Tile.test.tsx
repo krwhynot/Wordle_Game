@@ -1,6 +1,5 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Tile, { TileStatus } from '@/components/game/Tile';
+import Tile from '@/components/game/Tile';
 
 describe('Tile', () => {
   // Verify correct display of letters and application of status classes (correct, present, absent) and animation classes.

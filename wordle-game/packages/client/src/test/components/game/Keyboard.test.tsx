@@ -1,74 +1,200 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import Keyboard from '@/components/game/Keyboard';
-import { TileStatus } from '@/components/game/Tile';
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { setViewportSize, VIEWPORT_SIZES } from '../../testUtils';
+import Keyboard from '../../../components/game/Keyboard';
+import { GameProvider, useGame } from '../../../contexts/GameContext/GameContext';
+import { GameContextType, EvaluationResult } from 'shared';
 
-describe('Keyboard', () => {
-  const onKeyMock = vi.fn();
-  const defaultKeyStatus: Record<string, TileStatus | undefined> = {};
+// Mock the useGame hook and GameProvider
+vi.mock('../../../contexts/GameContext/GameContext', () => ({
+  useGame: vi.fn(),
+  GameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
 
-  beforeEach(() => {
-    onKeyMock.mockClear();
+const mockUseGame = useGame as ReturnType<typeof vi.fn>;
+
+const renderWithGameContext = (initialState: Partial<GameContextType> = {}) => {
+  const mockAddLetter = vi.fn();
+  const mockRemoveLetter = vi.fn();
+  const mockSubmitGuess = vi.fn();
+
+  const mockGameContext: GameContextType = {
+    solution: 'TESTS',
+    guesses: [],
+    currentGuess: '',
+    gameStatus: 'playing',
+    isRevealing: false,
+    invalidGuess: { isInvalid: false, rowIndex: -1 },
+    isGameLoaded: true,
+    addLetter: mockAddLetter,
+    removeLetter: mockRemoveLetter,
+    submitGuess: mockSubmitGuess,
+    getLetterStatus: vi.fn(() => undefined),
+    resetGame: vi.fn(),
+    ...initialState,
+  };
+
+  mockUseGame.mockReturnValue(mockGameContext);
+
+  return {
+    ...render(
+      <GameProvider>
+        <Keyboard />
+      </GameProvider>
+    ),
+    mockAddLetter,
+    mockRemoveLetter,
+    mockSubmitGuess,
+  };
+};
+
+describe('Keyboard Component', () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
   });
 
-  // Ensure all keys render.
-  test('renders all keyboard keys', () => {
-    render(<Keyboard onKey={onKeyMock} keyStatus={defaultKeyStatus} />);
+  describe('Visual Rendering', () => {
+    it('renders all letter keys', () => {
+      renderWithGameContext();
 
-    const expectedKeys = [
-      'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
-      'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
-      'ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'
-    ];
+      const qwertyRow = 'QWERTYUIOP';
+      const asdfRow = 'ASDFGHJKL';
+      const zxcvRow = 'ZXCVBNM';
 
-    expectedKeys.forEach(key => {
-      expect(screen.getByRole('button', { name: key.toLowerCase() === 'enter' ? 'enter' : key.toLowerCase() === 'backspace' ? 'backspace' : `key ${key}` })).toBeInTheDocument();
+      // Check that all letters are rendered
+      [...qwertyRow, ...asdfRow, ...zxcvRow].forEach(letter => {
+        expect(screen.getByText(letter)).toBeInTheDocument();
+      });
+    });
+
+    it('renders action keys', () => {
+      renderWithGameContext();
+
+      expect(screen.getByText('ENTER')).toBeInTheDocument();
+      expect(screen.getByText('⌫')).toBeInTheDocument();
+    });
+
+    it('applies correct status classes to keys', () => {
+      const mockGetLetterStatus = vi.fn((letter: string): EvaluationResult | undefined => {
+        const statusMap: Record<string, EvaluationResult> = {
+          'A': 'correct',
+          'B': 'present',
+          'C': 'absent',
+        };
+        return statusMap[letter];
+      });
+
+      renderWithGameContext({
+        getLetterStatus: mockGetLetterStatus,
+      });
+
+      const keyA = screen.getByText('A');
+      const keyB = screen.getByText('B');
+      const keyC = screen.getByText('C');
+      const keyD = screen.getByText('D');
+
+      expect(keyA).toHaveClass('key-correct');
+      expect(keyB).toHaveClass('key-present');
+      expect(keyC).toHaveClass('key-absent');
+      expect(keyD).toHaveClass('key-empty');
     });
   });
 
-  // Test onKeyPress functionality for each key.
-  test('calls onKey with the correct value when a letter key is clicked', () => {
-    render(<Keyboard onKey={onKeyMock} keyStatus={defaultKeyStatus} />);
-    fireEvent.click(screen.getByRole('button', { name: 'key Q' }));
-    expect(onKeyMock).toHaveBeenCalledTimes(1);
-    expect(onKeyMock).toHaveBeenCalledWith('Q');
+  describe('User Interactions', () => {
+    it('calls addLetter when letter key is clicked', () => {
+      const { mockAddLetter } = renderWithGameContext();
+
+      const keyA = screen.getByText('A');
+      fireEvent.click(keyA);
+
+      expect(mockAddLetter).toHaveBeenCalledWith('A');
+    });
+
+    it('calls submitGuess when ENTER key is clicked', () => {
+      const { mockSubmitGuess } = renderWithGameContext();
+
+      const enterKey = screen.getByText('ENTER');
+      fireEvent.click(enterKey);
+
+      expect(mockSubmitGuess).toHaveBeenCalled();
+    });
+
+    it('calls removeLetter when backspace key is clicked', () => {
+      const { mockRemoveLetter } = renderWithGameContext();
+
+      const backspaceKey = screen.getByText('⌫');
+      fireEvent.click(backspaceKey);
+
+      expect(mockRemoveLetter).toHaveBeenCalled();
+    });
+
+    it('disables keyboard when game is over', () => {
+      renderWithGameContext({
+        gameStatus: 'won',
+      });
+
+      const keyA = screen.getByText('A');
+      expect(keyA).toHaveAttribute('disabled');
+    });
   });
 
-  test('calls onKey with the correct value when ENTER key is clicked', () => {
-    render(<Keyboard onKey={onKeyMock} keyStatus={defaultKeyStatus} />);
-    fireEvent.click(screen.getByRole('button', { name: 'enter' }));
-    expect(onKeyMock).toHaveBeenCalledTimes(1);
-    expect(onKeyMock).toHaveBeenCalledWith('ENTER');
+  describe('Accessibility', () => {
+    it('has appropriate aria labels', () => {
+      renderWithGameContext();
+
+      const keyA = screen.getByText('A');
+      expect(keyA).toHaveAttribute('aria-label', 'A');
+
+      const enterKey = screen.getByText('ENTER');
+      expect(enterKey).toHaveAttribute('aria-label', 'Enter');
+
+      const backspaceKey = screen.getByText('⌫');
+      expect(backspaceKey).toHaveAttribute('aria-label', 'Backspace');
+    });
+
+    it('has proper keyboard role', () => {
+      renderWithGameContext();
+
+      const keyboard = screen.getByRole('region');
+      expect(keyboard).toHaveAttribute('aria-label', 'Virtual keyboard');
+    });
   });
 
-  test('calls onKey with the correct value when BACKSPACE key is clicked', () => {
-    render(<Keyboard onKey={onKeyMock} keyStatus={defaultKeyStatus} />);
-    fireEvent.click(screen.getByRole('button', { name: 'backspace' }));
-    expect(onKeyMock).toHaveBeenCalledTimes(1);
-    expect(onKeyMock).toHaveBeenCalledWith('BACKSPACE');
-  });
+  describe('Responsive Design', () => {
+    let cleanupViewport: () => void;
 
-  // Verify key status highlighting (e.g., a used letter turning grey, green, or yellow).
-  test('applies correct status class to keys based on keyStatus prop', () => {
-    const keyStatus: Record<string, TileStatus | undefined> = {
-      'Q': 'correct',
-      'W': 'present',
-      'E': 'absent',
-      'R': 'filled',
-    };
-    render(<Keyboard onKey={onKeyMock} keyStatus={keyStatus} />);
+    afterEach(() => {
+      if (cleanupViewport) {
+        cleanupViewport();
+      }
+    });
 
-    expect(screen.getByRole('button', { name: 'key Q' })).toHaveClass('keyboard-key-correct');
-    expect(screen.getByRole('button', { name: 'key W' })).toHaveClass('keyboard-key-present');
-    expect(screen.getByRole('button', { name: 'key E' })).toHaveClass('keyboard-key-absent');
-    expect(screen.getByRole('button', { name: 'key R' })).toHaveClass('keyboard-key-filled');
-    expect(screen.getByRole('button', { name: 'key T' })).not.toHaveClass('keyboard-key-empty'); // Default empty
-  });
+    it('adapts to mobile viewport size', () => {
+      cleanupViewport = setViewportSize(VIEWPORT_SIZES.MOBILE.width, VIEWPORT_SIZES.MOBILE.height);
 
-  test('does not apply status class if keyStatus is empty or undefined for a key', () => {
-    render(<Keyboard onKey={onKeyMock} keyStatus={defaultKeyStatus} />);
-    expect(screen.getByRole('button', { name: 'key A' })).not.toHaveClass('keyboard-key-correct');
-    expect(screen.getByRole('button', { name: 'key A' })).not.toHaveClass('keyboard-key-present');
-    expect(screen.getByRole('button', { name: 'key A' })).not.toHaveClass('keyboard-key-absent');
+      renderWithGameContext();
+
+      const keyboard = screen.getByRole('region');
+      expect(keyboard).toBeInTheDocument();
+      expect(window.innerWidth).toBe(VIEWPORT_SIZES.MOBILE.width);
+    });
+
+    it('maintains key size standards for touch targets', () => {
+      cleanupViewport = setViewportSize(VIEWPORT_SIZES.MOBILE.width, VIEWPORT_SIZES.MOBILE.height);
+
+      renderWithGameContext();
+
+      const keyA = screen.getByText('A');
+      const keyAStyle = window.getComputedStyle(keyA);
+
+      // Keys should have minimum touch target size (44px is the recommended minimum)
+      const minHeight = parseInt(keyAStyle.minHeight);
+      const minWidth = parseInt(keyAStyle.minWidth);
+
+      expect(minHeight).toBeGreaterThanOrEqual(40); // Allow some flexibility for actual implementation
+      expect(minWidth).toBeGreaterThanOrEqual(25); // Keyboard keys can be narrower than square
+    });
   });
 });

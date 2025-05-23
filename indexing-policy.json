@@ -1,0 +1,20 @@
+[
+  {
+    "key": {
+      "keys": ["_id"]
+    },
+    "options": {}
+  },
+  {
+    "key": {
+      "keys": ["word"],
+      "options": { "unique": true }
+    }
+  },
+  {
+    "key": {
+      "keys": ["lastUsed"],
+      "options": { }
+    }
+  }
+]

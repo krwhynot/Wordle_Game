@@ -1,16 +1,10 @@
 // packages/client/src/components/game/Keyboard.tsx
 import React from 'react';
-import { TileStatus } from './Tile';
+import { useGame } from '../../contexts/GameContext/GameContext';
 
-export interface KeyboardProps {
-  onKey: (key: string) => void;
-  keyStatus: Record<string, TileStatus | undefined>;
-}
+const Keyboard: React.FC = () => {
+  const { addLetter, removeLetter, submitGuess, getLetterStatus } = useGame();
 
-const Keyboard: React.FC<KeyboardProps> = ({
-  onKey = () => {},
-  keyStatus = {},
-}) => {
   const rows = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
@@ -18,7 +12,13 @@ const Keyboard: React.FC<KeyboardProps> = ({
   ];
 
   const handleKeyClick = (key: string) => {
-    onKey(key);
+    if (key === 'ENTER') {
+      submitGuess();
+    } else if (key === 'BACKSPACE') {
+      removeLetter();
+    } else {
+      addLetter(key);
+    }
   };
 
   return (
@@ -26,7 +26,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="keyboard-row">
           {row.map((key) => {
-            const status = keyStatus[key] || 'empty';
+            const status = getLetterStatus(key) || 'empty';
             const isSpecialKey = key === 'ENTER' || key === 'BACKSPACE';
 
             return (

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { GameProvider, useGame } from '../../contexts/GameContext/GameContext';
 import api from '../../services/api';
-import { GameStatus, Guess } from '../../types/game';
+import { GameStatus, Guess } from 'shared';
 
 // Mock API
 vi.mock('../../services/api', () => ({
@@ -278,14 +278,6 @@ describe('GameContext', () => {
       // and then submit
       await act(async () => {
         vi.spyOn(useGame(), 'submitGuess').mockImplementation(async () => {
-          const submitAction = {
-            type: 'SUBMIT_GUESS',
-            payload: {
-              word: 'TESTS',
-              evaluation: ['correct', 'correct', 'correct', 'correct', 'correct']
-            }
-          };
-          // This is a simplification - the actual dispatch isn't exposed
         });
 
         fireEvent.click(screen.getByTestId('submitGuess'));

@@ -1,6 +1,6 @@
 // Location: packages/client/src/context/GameContext/GameContext.tsx
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { GameContextType, GameState, Guess, EvaluationResult, GameStatus } from '../../types/game';
+import { GameContextType, GameState, Guess, EvaluationResult, GameStatus } from 'shared';
 import api from '../../services/api';
 
 // Constants
