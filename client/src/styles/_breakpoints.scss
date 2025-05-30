@@ -1,0 +1,162 @@
+// Responsive breakpoints
+// xs: 0px and up
+// sm: 600px and up
+// md: 960px and up
+// lg: 1280px and up
+// xl: 1920px and up
+
+// Breakpoint variables
+$breakpoint-xs: 0;
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1920px;
+
+// Media query mixins
+@mixin media-xs {
+  @media (min-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+@mixin media-sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin media-md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin media-lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin media-xl {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+// Max-width media queries (for targeting smaller screens only)
+@mixin media-max-xs {
+  @media (max-width: $breakpoint-sm - 1px) {
+    @content;
+  }
+}
+
+@mixin media-max-sm {
+  @media (max-width: $breakpoint-md - 1px) {
+    @content;
+  }
+}
+
+@mixin media-max-md {
+  @media (max-width: $breakpoint-lg - 1px) {
+    @content;
+  }
+}
+
+@mixin media-max-lg {
+  @media (max-width: $breakpoint-xl - 1px) {
+    @content;
+  }
+}
+
+// Range media queries (for targeting specific ranges)
+@mixin media-xs-only {
+  @media (min-width: $breakpoint-xs) and (max-width: $breakpoint-sm - 1px) {
+    @content;
+  }
+}
+
+@mixin media-sm-only {
+  @media (min-width: $breakpoint-sm) and (max-width: $breakpoint-md - 1px) {
+    @content;
+  }
+}
+
+@mixin media-md-only {
+  @media (min-width: $breakpoint-md) and (max-width: $breakpoint-lg - 1px) {
+    @content;
+  }
+}
+
+@mixin media-lg-only {
+  @media (min-width: $breakpoint-lg) and (max-width: $breakpoint-xl - 1px) {
+    @content;
+  }
+}
+
+// Device-specific media queries
+@mixin mobile-only {
+  @media (max-width: $breakpoint-sm - 1px) {
+    @content;
+  }
+}
+
+@mixin tablet-portrait {
+  @media (min-width: $breakpoint-sm) and (max-width: $breakpoint-md - 1px) {
+    @content;
+  }
+}
+
+@mixin tablet-landscape {
+  @media (min-width: $breakpoint-md) and (max-width: $breakpoint-lg - 1px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+// Container class responsive widths
+@mixin container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  
+  @include media-sm {
+    max-width: 540px;
+  }
+  
+  @include media-md {
+    max-width: 720px;
+  }
+  
+  @include media-lg {
+    max-width: 960px;
+  }
+  
+  @include media-xl {
+    max-width: 1140px;
+  }
+}
+
+// Fluid typography based on viewport width
+@mixin fluid-type($min-font-size, $max-font-size, $min-vw: $breakpoint-xs, $max-vw: $breakpoint-xl) {
+  font-size: $min-font-size;
+  
+  @media screen and (min-width: $min-vw) {
+    font-size: calc(#{$min-font-size} + #{strip-unit($max-font-size - $min-font-size)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+  }
+  
+  @media screen and (min-width: $max-vw) {
+    font-size: $max-font-size;
+  }
+}
+
+// Helper function to strip units
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}

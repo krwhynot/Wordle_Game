@@ -56,3 +56,16 @@ logs/
 # Miscellaneous
 .DS_Store
 Thumbs.db
+
+# Added by Claude Task Master
+# Logs
+logs
+dev-debug.log
+# Dependency directories
+# Editor directories and files
+.idea
+.vscode
+# OS specific
+# Task files
+tasks.json
+tasks/ 

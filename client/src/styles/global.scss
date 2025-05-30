@@ -1,0 +1,198 @@
+// Import all style partials
+@use 'variables';
+@use 'breakpoints';
+@use 'mixins';
+@use 'animations';
+@use 'app-bar';
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap');
+
+// CSS Reset and base styles
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-body);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+  transition: background-color var(--animation-spring), color var(--animation-spring);
+  min-height: 100vh;
+}
+
+// Make images and videos responsive by default
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+// Accessibility focus styles
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+// Typography defaults
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--font-size-xxxl);
+}
+
+h2 {
+  font-size: var(--font-size-xxl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+h5 {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+}
+
+h6 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--animation-spring);
+  
+  &:hover {
+    color: var(--color-primary-dark);
+  }
+}
+
+// Button reset
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// List styles
+ul, ol {
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+// Container class
+.container {
+  @include mixins.container;
+}
+
+// Utility classes
+.visually-hidden {
+  @include mixins.visually-hidden;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  @include mixins.flex-center;
+}
+
+.flex-between {
+  @include mixins.flex-between;
+}
+
+.flex-column {
+  @include mixins.flex-column;
+}
+
+// Animation utility classes
+.fade-in {
+  @include animations.fade-in;
+}
+
+.slide-in-up {
+  @include animations.slide-in-up;
+}
+
+.slide-in-down {
+  @include animations.slide-in-down;
+}
+
+// Game specific utility classes
+.game-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+// Material 3 inspired components
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  @include mixins.elevation(1);
+  transition: box-shadow var(--animation-spring);
+  
+  &:hover {
+    @include mixins.elevation(2);
+  }
+}
+
+.btn {
+  @include mixins.button-base;
+}
+
+.btn-primary {
+  @include mixins.button-primary;
+}
+
+.btn-secondary {
+  @include mixins.button-secondary;
+}
+
+// For glass morphism effects
+.glass {
+  @include mixins.glass-morphism;
+  
+  [data-theme="dark"] & {
+    @include mixins.glass-morphism-dark;
+  }
+}

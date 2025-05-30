@@ -1,0 +1,196 @@
+// Mixins for commonly used style patterns
+@use 'variables' as *;
+
+// Flexbox mixins
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Typography mixins
+@mixin heading-1 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xxxl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+@mixin heading-2 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+@mixin heading-3 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+@mixin body-text {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+@mixin small-text {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+// Material elevation mixins
+@mixin elevation($level: 1) {
+  box-shadow: var(--elevation-#{$level});
+}
+
+// Transitions and animations
+@mixin transition($property: all, $duration: var(--animation-spring)) {
+  transition: $property $duration;
+}
+
+// Glass morphism effect
+@mixin glass-morphism($background-opacity: 0.7, $blur: 10px) {
+  background-color: rgba(255, 255, 255, $background-opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+// Dark mode glass morphism
+@mixin glass-morphism-dark($background-opacity: 0.2, $blur: 10px) {
+  background-color: rgba(30, 30, 30, $background-opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(70, 70, 70, 0.18);
+}
+
+// Container padding based on screen size
+@mixin container-padding {
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  
+  @include media-md {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+  
+  @include media-lg {
+    padding-left: var(--spacing-xl);
+    padding-right: var(--spacing-xl);
+  }
+}
+
+// Button styles
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--animation-spring);
+  border: none;
+  outline: none;
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: var(--color-primary);
+  color: white;
+  
+  &:hover {
+    background-color: var(--color-primary-dark);
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+  
+  &:disabled {
+    background-color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  
+  &:hover {
+    background-color: rgba(6, 214, 160, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+  
+  &:disabled {
+    color: var(--color-text-disabled);
+    border-color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+}
+
+// Accessibility
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// Game-specific mixins
+@mixin game-tile {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(1.5rem, 8vw, 2.5rem);
+  border: 2px solid var(--color-text-hint);
+  border-radius: var(--border-radius-sm);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  transition: transform var(--animation-bounce), background-color var(--animation-spring), border-color var(--animation-spring);
+}
