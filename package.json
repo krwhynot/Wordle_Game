@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "axios": "^1.9.0",
-    "mongodb": "^6.16.0"
-  }
-}
