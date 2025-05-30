@@ -67,18 +67,32 @@
   border-radius: var(--border-radius-pill);
   background-color: transparent;
   color: var(--color-text-primary);
-  transition: background-color var(--animation-spring);
+  transition: all var(--animation-spring);
+  font-size: 1.25rem;
+  cursor: pointer;
   
   &:hover {
-    background-color: rgba(var(--color-text-primary-rgb, 0, 0, 0), 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.05);
   }
   
   &:active {
-    background-color: rgba(var(--color-text-primary-rgb, 0, 0, 0), 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
   }
   
   &:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+  
+  [data-theme="dark"] & {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    &:active {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
   }
 }

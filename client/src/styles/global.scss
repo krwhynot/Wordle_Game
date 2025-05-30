@@ -110,7 +110,35 @@ ul, ol {
 
 // Container class
 .container {
-  @include mixins.container;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  
+  @include breakpoints.media-sm {
+    max-width: 540px;
+  }
+  
+  @include breakpoints.media-md {
+    max-width: 720px;
+  }
+  
+  @include breakpoints.media-lg {
+    max-width: 960px;
+  }
+  
+  @include breakpoints.media-xl {
+    max-width: 1140px;
+  }
+}
+
+.container-fluid {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
 }
 
 // Utility classes
