@@ -7,6 +7,7 @@
  * - Managing word lists
  */
 import { post, get, type ApiResponse } from './api';
+import { FB_WORDS, isValidFBWord } from '../data/fbWords';
 
 // Type definitions for the responses
 export interface ValidateWordResponse {
@@ -21,9 +22,8 @@ export interface DailyWordResponse {
 }
 
 /**
- * Mock API data for development without a backend
+ * Use FB_WORDS dictionary for validation and word selection
  */
-const MOCK_VALID_WORDS = ['SAUTE', 'FLOUR', 'KNIFE', 'BRAZE', 'GRILL', 'PLATE', 'CREAM'];
 
 /**
  * Validates a word guess against the F&B wordlist
@@ -43,13 +43,13 @@ export const validateWord = async (guess: string): Promise<ApiResponse<ValidateW
   try {
     // Check environment flag for mock API
     if (import.meta.env.VITE_APP_ENABLE_MOCK_API === 'true') {
-      // Mock API response for development
+      // Mock API response for development using our FB_WORDS dictionary
       const normalizedGuess = guess.toUpperCase();
       return {
         data: {
           guess: normalizedGuess,
-          valid: MOCK_VALID_WORDS.includes(normalizedGuess),
-          reason: !MOCK_VALID_WORDS.includes(normalizedGuess) ? 'Not a valid F&B term' : null
+          valid: isValidFBWord(normalizedGuess),
+          reason: !isValidFBWord(normalizedGuess) ? 'Not a valid F&B term' : null
         },
         status: 200
       };
@@ -75,15 +75,15 @@ export const getDailyWord = async (): Promise<ApiResponse<DailyWordResponse>> =>
   try {
     // Check environment flag for mock API
     if (import.meta.env.VITE_APP_ENABLE_MOCK_API === 'true') {
-      // Mock API response for development
+      // Mock API response for development using FB_WORDS dictionary
       const today = new Date().toISOString().split('T')[0];
       // Deterministically select a word based on date
       const dateNum = parseInt(today.replace(/-/g, ''), 10);
-      const wordIndex = dateNum % MOCK_VALID_WORDS.length;
+      const wordIndex = dateNum % FB_WORDS.length;
       
       return {
         data: {
-          word: MOCK_VALID_WORDS[wordIndex],
+          word: FB_WORDS[wordIndex],
           date: today
         },
         status: 200

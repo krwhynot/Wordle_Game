@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from './hooks/useSession';
-// Using relative import with explicit extension to resolve module not found error
-import { useTheme } from './hooks/useTheme.ts';
+import { useTheme } from './hooks/useTheme';
 import { GameProvider } from './contexts/GameContext';
 import { useGame } from './hooks/useGame';
 import { SessionProvider } from './contexts/SessionContext';
@@ -20,7 +19,16 @@ function AppContent() {
   const [transitionActive, setTransitionActive] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { gameState, addLetter, removeLetter, submitGuess, resetGame, isRevealing, invalidRowIndex } = useGame();
+  const { 
+    gameState, 
+    addLetter, 
+    removeLetter, 
+    submitGuess, 
+    resetGame, 
+    isRevealing, 
+    invalidRowIndex,
+    errorMessage 
+  } = useGame();
   
   // Icon based on current theme
   const themeIcon = theme === 'dark' ? '☀️' : '🌙';
@@ -143,6 +151,13 @@ function AppContent() {
                 {/* Virtual keyboard */}
                 <Keyboard />
                 
+                {/* Error message display */}
+                {errorMessage && (
+                  <div className="error-message">
+                    {errorMessage}
+                  </div>
+                )}
+                
                 {/* Game status and controls */}
                 <div className="game-controls">
                   {gameState.isGameOver && (
@@ -184,7 +199,7 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <SessionProvider initialName={sessionStorage.getItem('fbwordle_name') || ''}>
+      <SessionProvider>
         <GameProvider>
           <AppContent />
         </GameProvider>

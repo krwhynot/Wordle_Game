@@ -29,9 +29,24 @@
       background-color: var(--color-surface-variant);
       color: var(--color-text-primary);
       transition: background-color var(--animation-spring), color var(--animation-spring);
+      cursor: pointer;
+      outline: none;
+      position: relative;
+      overflow: hidden;
 
       &.large {
         flex: 1.5;
+        font-size: 0.85em;
+        letter-spacing: -0.5px;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+      }
+
+      &:hover {
+        filter: brightness(1.05);
       }
 
       &:active {
