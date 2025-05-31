@@ -1,0 +1,10 @@
+{
+  "name": "wordle-game-root",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "install": "cd client && npm ci",
+    "build": "cd client && npm run build",
+    "start": "cd client && npm run dev"
+  }
+}
