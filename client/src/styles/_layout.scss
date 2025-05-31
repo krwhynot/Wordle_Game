@@ -16,12 +16,20 @@
   position: sticky;
   top: 0;
   z-index: 10;
+
+  @include breakpoints.media-max-xs {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
   
   h1 {
     margin: 0;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--color-primary);
+
+    @include breakpoints.media-max-xs {
+      font-size: var(--font-size-md);
+    }
   }
   
   .app-bar-actions {
@@ -60,6 +68,10 @@
   margin: 0 auto;
   padding: var(--spacing-md);
   width: 100%;
+
+  @include breakpoints.media-max-xs {
+    padding: var(--spacing-sm);
+  }
 }
 
 // Card

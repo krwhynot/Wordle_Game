@@ -1,21 +1,25 @@
 /**
  * Statistics Service Module
  * 
- * Provides API services for game statistics functionality:
- * - Saving game results
- * - Retrieving player statistics
- * - Calculating streaks and averages
+ * Provides comprehensive statistics functionality for the F&B Wordle game:
+ * - Tracks game results and player statistics
+ * - Manages local storage for offline play
+ * - Syncs with backend when available
+ * - Handles streak calculations and guess distribution
  */
+
 import { post, get, type ApiResponse } from './api';
 
 // Type definitions for statistics
 export interface GameResult {
   sessionId: string;
-  word: string;
-  guesses: number;
-  success: boolean;
+  playerName: string;
+  targetWord: string;
+  guesses: string[];
+  isWin: boolean;
+  attempts: number;
   date: string;
-  timeSpentMs: number;
+  timeSpentMs?: number;
 }
 
 export interface PlayerStatistics {
@@ -23,30 +27,48 @@ export interface PlayerStatistics {
   gamesWon: number;
   currentStreak: number;
   maxStreak: number;
-  averageGuesses: number;
-  guessDistribution: Record<number, number>;
-  lastPlayed: string | null;
+  winPercentage: number;
+  guessDistribution: number[];
+  lastPlayed: string;
+  lastCompleted: string;
 }
 
-// Constants for local storage
-const STATISTICS_STORAGE_KEY = 'fbwordle_statistics';
+// Default empty stats
+export const DEFAULT_STATS: PlayerStatistics = {
+  gamesPlayed: 0,
+  gamesWon: 0,
+  currentStreak: 0,
+  maxStreak: 0,
+  winPercentage: 0,
+  guessDistribution: [0, 0, 0, 0, 0, 0],
+  lastPlayed: '',
+  lastCompleted: ''
+};
+
+// Local storage keys
+const STATS_STORAGE_KEY = 'fbwordle_stats';
+const LOCAL_RESULTS_KEY = 'fbwordle_game_results';
 
 /**
- * Saves a game result to the backend
- * 
- * @param result - The game result to save
- * @returns Promise with the API response
+ * Saves a game result to local storage and syncs with backend if online
  */
 export const saveGameResult = async (result: GameResult): Promise<ApiResponse<void>> => {
   try {
-    // For offline play, save to local storage first
+    // Save to local storage first for offline access
     const storedResults = getLocalGameResults();
     storedResults.push(result);
-    localStorage.setItem(STATISTICS_STORAGE_KEY, JSON.stringify(storedResults));
+    localStorage.setItem(LOCAL_RESULTS_KEY, JSON.stringify(storedResults));
     
-    // If online, send to the backend
+    // Update local stats
+    updateLocalStats(result);
+    
+    // If online, try to sync with backend
     if (navigator.onLine) {
-      return await post<void>('/statistics/save', result);
+      try {
+        return await post<void>('/api/game/results', result);
+      } catch (error) {
+        console.warn('Failed to sync with backend, using local storage', error);
+      }
     }
     
     return { status: 200 };
@@ -60,20 +82,17 @@ export const saveGameResult = async (result: GameResult): Promise<ApiResponse<vo
 };
 
 /**
- * Retrieves player statistics from local storage and backend
- * 
- * @param sessionId - Player's session ID
- * @returns Promise with player statistics
+ * Retrieves player statistics, trying the backend first then falling back to local storage
  */
 export const getPlayerStatistics = async (sessionId: string): Promise<ApiResponse<PlayerStatistics>> => {
   try {
     // If online, try to get from backend first
     if (navigator.onLine) {
       try {
-        const response = await get<PlayerStatistics>(`/statistics/${sessionId}`);
+        const response = await get<PlayerStatistics>(`/api/statistics/${sessionId}`);
         if (response.status === 200 && response.data) {
           // Save remote stats to local storage for offline access
-          localStorage.setItem(STATISTICS_STORAGE_KEY + '_calculated', JSON.stringify(response.data));
+          saveStats(response.data);
           return response;
         }
       } catch (error) {
@@ -84,130 +103,187 @@ export const getPlayerStatistics = async (sessionId: string): Promise<ApiRespons
     // Fall back to local calculations
     return { 
       status: 200, 
-      data: calculateStatistics(getLocalGameResults(), sessionId)
+      data: calculateLocalStatistics()
     };
   } catch (error) {
     console.error('Failed to retrieve player statistics:', error);
     return { 
-      status: 500, 
-      error: 'Failed to retrieve player statistics'
+      status: 200, // Still return local stats even on error
+      data: loadStats()
     };
   }
 };
 
 /**
  * Gets locally stored game results
- * 
- * @returns Array of game results from local storage
  */
 const getLocalGameResults = (): GameResult[] => {
   try {
-    const stored = localStorage.getItem(STATISTICS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
+    const savedResults = localStorage.getItem(LOCAL_RESULTS_KEY);
+    return savedResults ? JSON.parse(savedResults) as GameResult[] : [];
+  } catch (error) {
+    console.error('Error loading game results:', error);
     return [];
   }
 };
 
 /**
- * Calculates player statistics from game results
- * 
- * @param results - Array of game results
- * @param sessionId - Player's session ID
- * @returns Calculated player statistics
+ * Loads player statistics from localStorage
  */
-const calculateStatistics = (results: GameResult[], sessionId: string): PlayerStatistics => {
-  // Filter results for this session
-  const sessionResults = results.filter(r => r.sessionId === sessionId);
+const loadStats = (): PlayerStatistics => {
+  try {
+    const savedStats = localStorage.getItem(STATS_STORAGE_KEY);
+    return savedStats ? JSON.parse(savedStats) as PlayerStatistics : { ...DEFAULT_STATS };
+  } catch (error) {
+    console.error('Error loading stats:', error);
+    return { ...DEFAULT_STATS };
+  }
+};
+
+/**
+ * Saves player statistics to localStorage
+ */
+const saveStats = (stats: PlayerStatistics): void => {
+  try {
+    localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(stats));
+  } catch (error) {
+    console.error('Error saving stats:', error);
+  }
+};
+
+/**
+ * Updates local statistics based on game result
+ */
+const updateLocalStats = (result: GameResult): void => {
+  const currentStats = loadStats();
+  const today = new Date().toISOString().split('T')[0];
   
-  if (sessionResults.length === 0) {
-    return {
-      gamesPlayed: 0,
-      gamesWon: 0,
-      currentStreak: 0,
-      maxStreak: 0,
-      averageGuesses: 0,
-      guessDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
-      lastPlayed: null
-    };
+  const updatedStats: PlayerStatistics = {
+    ...currentStats,
+    gamesPlayed: currentStats.gamesPlayed + 1,
+    lastPlayed: today
+  };
+  
+  // If game was won
+  if (result.isWin) {
+    updatedStats.gamesWon = currentStats.gamesWon + 1;
+    
+    // Update streak - increment if last game was yesterday or reset if longer
+    const lastPlayed = new Date(currentStats.lastCompleted);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    updatedStats.currentStreak = 
+      currentStats.lastCompleted === today ? currentStats.currentStreak : // Same day, keep streak
+      currentStats.lastCompleted === yesterday.toISOString().split('T')[0] ? currentStats.currentStreak + 1 : // Next day, increment
+      1; // More than one day, reset to 1
+      
+    updatedStats.maxStreak = Math.max(currentStats.maxStreak, updatedStats.currentStreak);
+    updatedStats.lastCompleted = today;
+    
+    // Update guess distribution (attempts is 1-based, array is 0-based)
+    const guessIndex = Math.min(Math.max(0, result.attempts - 1), 5);
+    updatedStats.guessDistribution = [...currentStats.guessDistribution];
+    updatedStats.guessDistribution[guessIndex] = (currentStats.guessDistribution[guessIndex] || 0) + 1;
+  } else {
+    // Reset streak on loss
+    updatedStats.currentStreak = 0;
   }
   
-  // Sort by date, most recent first
-  const sortedResults = [...sessionResults].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+  // Calculate win percentage
+  updatedStats.winPercentage = Math.round((updatedStats.gamesWon / updatedStats.gamesPlayed) * 100);
+  
+  saveStats(updatedStats);
+};
+
+/**
+ * Calculates statistics from locally stored game results
+ */
+const calculateLocalStatistics = (): PlayerStatistics => {
+  const results = getLocalGameResults();
+  
+  if (results.length === 0) {
+    return { ...DEFAULT_STATS };
+  }
+  
+  // Sort by date
+  const sortedResults = [...results].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
   );
   
-  const gamesPlayed = sessionResults.length;
-  const gamesWon = sessionResults.filter(r => r.success).length;
-  const lastPlayed = sortedResults[0]?.date || null;
+  // Calculate basic stats
+  const stats: PlayerStatistics = {
+    ...DEFAULT_STATS,
+    gamesPlayed: sortedResults.length,
+    gamesWon: sortedResults.filter(r => r.isWin).length,
+    lastPlayed: sortedResults[sortedResults.length - 1].date,
+    lastCompleted: sortedResults.filter(r => r.isWin).pop()?.date || ''
+  };
+  
+  // Calculate win percentage
+  stats.winPercentage = stats.gamesPlayed > 0 
+    ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) 
+    : 0;
+  
+  // Calculate guess distribution
+  const distribution = [0, 0, 0, 0, 0, 0];
+  sortedResults
+    .filter(r => r.isWin && r.attempts >= 1 && r.attempts <= 6)
+    .forEach(r => {
+      distribution[r.attempts - 1]++;
+    });
+  stats.guessDistribution = distribution;
   
   // Calculate streaks
   let currentStreak = 0;
   let maxStreak = 0;
-  let tempStreak = 0;
+  let lastDate: Date | null = null;
   
-  for (let i = 0; i < sortedResults.length; i++) {
-    if (sortedResults[i].success) {
-      tempStreak++;
-      maxStreak = Math.max(maxStreak, tempStreak);
+  for (const result of sortedResults) {
+    const resultDate = new Date(result.date);
+    
+    if (result.isWin) {
+      if (!lastDate || isNextDay(lastDate, resultDate)) {
+        currentStreak++;
+      } else if (!isSameDay(lastDate, resultDate)) {
+        // Reset streak if not consecutive days
+        currentStreak = 1;
+      }
       
-      // Check if this is the most recent streak
-      if (i === 0) {
-        currentStreak = tempStreak;
-      }
+      maxStreak = Math.max(maxStreak, currentStreak);
+      lastDate = resultDate;
     } else {
-      tempStreak = 0;
-      if (i === 0) {
-        currentStreak = 0;
-      }
+      currentStreak = 0; // Reset streak on loss
     }
   }
   
-  // Calculate guess distribution
-  const guessDistribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-  sessionResults.forEach(result => {
-    if (result.success && result.guesses >= 1 && result.guesses <= 6) {
-      guessDistribution[result.guesses]++;
-    }
-  });
+  stats.currentStreak = currentStreak;
+  stats.maxStreak = maxStreak;
   
-  // Calculate average guesses (only for successful games)
-  const successfulGames = sessionResults.filter(r => r.success);
-  const totalGuesses = successfulGames.reduce((sum, r) => sum + r.guesses, 0);
-  const averageGuesses = successfulGames.length > 0 
-    ? Math.round((totalGuesses / successfulGames.length) * 10) / 10
-    : 0;
-  
-  return {
-    gamesPlayed,
-    gamesWon,
-    currentStreak,
-    maxStreak,
-    averageGuesses,
-    guessDistribution,
-    lastPlayed
-  };
+  return stats;
+};
+
+// Helper function to check if two dates are the same day
+const isSameDay = (date1: Date, date2: Date): boolean => {
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+};
+
+// Helper function to check if date2 is the day after date1
+const isNextDay = (date1: Date, date2: Date): boolean => {
+  const nextDay = new Date(date1);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return isSameDay(nextDay, date2);
 };
 
 /**
- * Formats game result for sharing
- * 
- * @param result - The game result to format
- * @returns Formatted text for sharing
+ * Resets all statistics (for testing/development)
  */
-export const formatShareableResult = (result: GameResult): string => {
-  const date = new Date(result.date);
-  const dateString = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-  
-  let shareText = `F&B Wordle ${dateString} - ${result.success ? result.guesses : 'X'}/6\n\n`;
-  
-  // In a real implementation, we would add the emoji pattern of the game
-  // For now, return a placeholder pattern
-  if (result.success) {
-    shareText += Array(result.guesses).fill('🟩').join('') + '\n';
-  } else {
-    shareText += '❌\n';
-  }
-  
-  return shareText;
+export const resetStatistics = (): void => {
+  localStorage.removeItem(STATS_STORAGE_KEY);
+  localStorage.removeItem(LOCAL_RESULTS_KEY);
 };
+
+// Export the default stats for easy importing
+export { DEFAULT_STATS as defaultStats };

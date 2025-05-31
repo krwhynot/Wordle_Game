@@ -4,5 +4,7 @@
   "scripts": {
     "start": "func start --cors \"*\""
   },
-  "dependencies": {}
+  "dependencies": {
+    "applicationinsights": "^2.1.0"
+  }
 }

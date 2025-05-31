@@ -5,10 +5,8 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": [
-        "post"
-      ],
-      "route": "submitResult"
+      "methods": ["get"],
+      "route": "statistics"
     },
     {
       "type": "http",
@@ -17,12 +15,12 @@
     },
     {
       "type": "cosmosDB",
-      "direction": "out",
-      "name": "outputDocument",
+      "direction": "in",
+      "name": "gameResults",
       "databaseName": "WordleDB",
       "collectionName": "GameResults",
-      "createIfNotExists": true,
-      "connectionStringSetting": "COSMOSDB_CONNECTION_STRING"
+      "connectionStringSetting": "COSMOSDB_CONNECTION_STRING",
+      "sqlQuery": "SELECT * FROM c"
     }
   ]
 }

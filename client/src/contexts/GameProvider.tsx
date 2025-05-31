@@ -4,7 +4,7 @@ import { useSession } from '../hooks/useSession';
 import { GameContext } from './GameContextDefinitions';
 import type { GameState, TileState } from '../types/game';
 import { validateWord, getDailyWord } from '../services/wordService';
-import { submitGameResult } from '../services/statsService';
+import { saveGameResult } from '../services/statisticsService';
 
 // Create a function to generate the initial empty game state
 const createInitialGameState = (targetWord: string = ''): GameState => {
@@ -274,7 +274,7 @@ export const GameProvider = ({ children }: GameProviderProps) => {
     if (isGameOver && playerName) {
       try {
         // Note: Adapting to match statsService.ts GameResult interface
-        await submitGameResult({
+        await saveGameResult({
           sessionId: crypto.randomUUID(), // Generate a session ID if needed by the API
           playerName,
           targetWord,
