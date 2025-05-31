@@ -7,7 +7,8 @@
  */
 
 // API configuration from environment variables
-const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:7071/api';
+// Support both VITE_APP_API_URL and VITE_API_BASE_URL env vars [IV]
+const API_URL = import.meta.env.VITE_APP_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071/api';
 // USE_MOCK_API is handled in individual service files
 
 // Common headers for API requests
@@ -31,7 +32,8 @@ export interface ApiResponse<T> {
  * @returns The complete API URL
  */
 export const createApiUrl = (path: string): string => {
-  return `${API_URL}/api/${path}`;
+  // Construct endpoint URL without duplicate '/api' prefix [SF]
+  return `${API_URL}/${path}`;
 };
 
 /**

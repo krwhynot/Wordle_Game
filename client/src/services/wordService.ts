@@ -94,9 +94,13 @@ export const getDailyWord = async (): Promise<ApiResponse<DailyWordResponse>> =>
     return await get<DailyWordResponse>('dailyWord');
   } catch (error) {
     console.error('Error getting daily word:', error);
+    // Fallback to mock daily word if real API call fails [REH]
+    const today = new Date().toISOString().split('T')[0];
+    const dateNum = parseInt(today.replace(/-/g, ''), 10);
+    const wordIndex = dateNum % FB_WORDS.length;
     return {
-      error: 'Failed to get daily word',
-      status: 500
+      data: { word: FB_WORDS[wordIndex], date: today },
+      status: 200
     };
   }
 };

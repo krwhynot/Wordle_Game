@@ -1,6 +1,7 @@
 // Game board styles
 @use 'variables';
 @use 'mixins';
+@use 'breakpoints';
 
 // High contrast mode styles for game board
 [data-high-contrast="true"] {
@@ -62,6 +63,24 @@
   // Dark mode adjustments
   [data-theme="dark"] & {
     box-shadow: var(--elevation-2);
+  }
+  
+  // Responsive adjustments for game board layout [SF]
+  @include breakpoints.media-max-sm {
+    .game-board {
+      padding: var(--spacing-sm);
+      width: 100%;
+      
+      .row {
+        margin-bottom: var(--spacing-xs);
+      }
+    }
+  }
+  @include breakpoints.media-max-md {
+    .game-board {
+      padding: var(--spacing-md);
+      max-width: 90%;
+    }
   }
 }
 
