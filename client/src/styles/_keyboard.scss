@@ -9,15 +9,14 @@
 
   .keyboard-row {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
     width: 100%;
     margin-bottom: var(--spacing-sm);
 
     .key {
-      flex: none;
-      width: 62px;
+      flex: 1;
       height: 62px;
-      margin: var(--spacing-xs);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -68,18 +67,14 @@
 // Responsive key sizing to prevent overflow
 @media (max-width: 600px) {
   .keyboard-row .key {
-    width: 48px;
     height: 48px;
-    margin: var(--spacing-xs);
     font-size: var(--font-size-sm);
   }
 }
 
 @media (max-width: 360px) {
   .keyboard-row .key {
-    width: 36px;
     height: 36px;
-    margin: 2px;
     font-size: var(--font-size-xs);
   }
 }
