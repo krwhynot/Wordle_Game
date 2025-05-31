@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { GameProvider, useGame } from './contexts/GameContext';
 import { AppBar, Container, Card } from './components/layout';
 import { Button } from './components/ui';
 import { GameBoard, Keyboard } from './components/game';
+import StatisticsModal from './components/game/StatisticsModal';
 import './styles/global.scss';
 
 // Inner component that uses the theme and game contexts
 function AppContent() {
   const [transitionActive, setTransitionActive] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { gameState, addLetter, removeLetter, submitGuess, resetGame, isRevealing, invalidRowIndex } = useGame();
   
@@ -45,6 +47,22 @@ function AppContent() {
       addLetter(key);
     }
   };
+  
+  // Open stats when game ends
+  useEffect(() => {
+    if (gameState.isGameOver) {
+      setShowStats(true);
+    }
+  }, [gameState.isGameOver]);
+  
+  // Prepare statistics data
+  const totalGames = 1;
+  const distribution = Array(gameState.gameBoard.maxAttempts).fill(0);
+  if (gameState.isGameOver) {
+    const attempts = gameState.guessedWords.length;
+    if (attempts >= 1 && attempts <= distribution.length) distribution[attempts - 1] = 1;
+  }
+  const winRate = Math.round((distribution.reduce((sum, count) => sum + count, 0) / totalGames) * 100);
   
   return (
     <div 
@@ -105,6 +123,16 @@ function AppContent() {
           </Card>
         </div>
       </Container>
+      
+      {/* Statistics Modal */}
+      {showStats && (
+        <StatisticsModal
+          totalGames={totalGames}
+          winRate={winRate}
+          distribution={distribution}
+          onClose={() => setShowStats(false)}
+        />
+      )}
     </div>
   );
 }
