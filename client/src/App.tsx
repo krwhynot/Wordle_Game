@@ -48,22 +48,37 @@ function AppContent() {
     }
   };
   
-  // Open stats when game ends
+  interface Stats { totalGames: number; wins: number; distribution: number[]; }
+  const maxAttempts = gameState.gameBoard.maxAttempts;
+  const [stats, setStats] = useState<Stats>(() => {
+    const saved = localStorage.getItem('fbwordle_stats');
+    return saved
+      ? JSON.parse(saved)
+      : { totalGames: 0, wins: 0, distribution: Array(maxAttempts).fill(0) };
+  });
+
   useEffect(() => {
     if (gameState.isGameOver) {
+      setStats(prev => {
+        const attempts = gameState.guessedWords.length;
+        const distribution = [...prev.distribution];
+        if (attempts >= 1 && attempts <= distribution.length) distribution[attempts - 1]++;
+        const newStats = {
+          totalGames: prev.totalGames + 1,
+          wins: prev.wins + (gameState.isGameWon ? 1 : 0),
+          distribution,
+        };
+        localStorage.setItem('fbwordle_stats', JSON.stringify(newStats));
+        return newStats;
+      });
       setShowStats(true);
     }
   }, [gameState.isGameOver]);
-  
-  // Prepare statistics data
-  const totalGames = 1;
-  const distribution = Array(gameState.gameBoard.maxAttempts).fill(0);
-  if (gameState.isGameOver) {
-    const attempts = gameState.guessedWords.length;
-    if (attempts >= 1 && attempts <= distribution.length) distribution[attempts - 1] = 1;
-  }
-  const winRate = Math.round((distribution.reduce((sum, count) => sum + count, 0) / totalGames) * 100);
-  
+
+  const totalGames = stats.totalGames;
+  const winRate = totalGames > 0 ? Math.round((stats.wins / totalGames) * 100) : 0;
+  const distribution = stats.distribution;
+
   return (
     <div 
       className="app" 
