@@ -1,0 +1,52 @@
+// Theme transition animations
+@use 'variables';
+@use 'animations';
+
+// Add a smooth transition overlay when changing themes
+.theme-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: var(--z-index-modal);
+  opacity: 0;
+  background-color: var(--color-primary);
+  transition: opacity 300ms ease-in-out;
+  
+  &.active {
+    animation: theme-transition 500ms ease-in-out forwards;
+  }
+}
+
+@keyframes theme-transition {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+// Make sure all themed elements transition smoothly
+body, 
+.app, 
+.app-bar, 
+.card, 
+.btn, 
+.btn-primary, 
+.btn-secondary,
+.dialog,
+input, 
+textarea, 
+select {
+  transition: 
+    background-color var(--animation-spring),
+    color var(--animation-spring),
+    border-color var(--animation-spring),
+    box-shadow var(--animation-spring);
+}
