@@ -3,7 +3,7 @@ import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { GameProvider, useGame } from './contexts/GameContext';
 import { AppBar, Container, Card } from './components/layout';
 import { Button } from './components/ui';
-import { GameBoard } from './components/game';
+import { GameBoard, Keyboard } from './components/game';
 import './styles/global.scss';
 
 // Inner component that uses the theme and game contexts
@@ -80,6 +80,9 @@ function AppContent() {
               isRevealing={isRevealing}
               invalidRowIndex={invalidRowIndex}
             />
+            
+            {/* Virtual keyboard */}
+            <Keyboard />
             
             {/* Game status and controls */}
             <div className="game-controls">
