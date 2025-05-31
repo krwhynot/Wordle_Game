@@ -5,11 +5,11 @@ import type { TileState } from '../../types/game';
 const rows: string[][] = [
   ['Q','W','E','R','T','Y','U','I','O','P'],
   ['A','S','D','F','G','H','J','K','L'],
-  ['Enter','Z','X','C','V','B','N','M','Backspace'],
+  ['Z','X','C','V','B','N','M'],
 ];
 
 const Keyboard = () => {
-  const { gameState, addLetter, removeLetter, submitGuess } = useGame();
+  const { gameState, addLetter } = useGame();
   const { letterStatuses } = gameState;
 
   return (
@@ -18,11 +18,7 @@ const Keyboard = () => {
         <div key={rowIndex} className="keyboard-row">
           {row.map((key) => {
             const state = (letterStatuses[key] as TileState) || 'empty';
-            const handleClick = () => {
-              if (key === 'Enter') submitGuess();
-              else if (key === 'Backspace') removeLetter();
-              else addLetter(key);
-            };
+            const handleClick = () => addLetter(key);
             return (
               <button
                 key={key}
@@ -30,7 +26,7 @@ const Keyboard = () => {
                 onClick={handleClick}
                 aria-label={key}
               >
-                {key === 'Backspace' ? '←' : key}
+                {key}
               </button>
             );
           })}
