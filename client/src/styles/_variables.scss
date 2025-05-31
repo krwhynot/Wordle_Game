@@ -97,6 +97,28 @@
   --z-index-tooltip: 1070;
 }
 
+// High contrast mode overrides
+[data-high-contrast="true"] {
+  // Higher contrast colors for better accessibility
+  --color-correct: #00AA00;  // Darker green for correct letters
+  --color-present: #FFAA00;  // Darker yellow for present letters
+  --color-absent: #555555;   // Darker gray for absent letters
+  
+  // Increased contrast for text
+  --color-text-primary: #000000;
+  --color-text-secondary: #333333;
+  
+  // Stronger borders
+  --border-width: 2px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  
+  // Stronger focus indicators
+  --focus-outline-width: 3px;
+  --focus-outline-color: #0066CC;
+}
+
 // Dark theme variables
 [data-theme="dark"] {
   --color-background: #121212;

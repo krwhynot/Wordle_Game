@@ -1,6 +1,56 @@
 @use 'variables';
 @use 'mixins';
 
+// High contrast mode keyboard styles
+[data-high-contrast="true"] {
+  .keyboard {
+    .keyboard-row {
+      .key {
+        // Stronger borders and focus indicators for all keys
+        border-width: 2px;
+        border-color: #555555;
+        font-weight: var(--font-weight-bold);
+        
+        &:focus-visible {
+          outline-width: 3px;
+          outline-color: var(--focus-outline-color);
+        }
+        
+        // Enhanced contrast for correct keys
+        &.key-correct {
+          background-color: var(--color-correct);
+          border-color: #000000;
+          color: #FFFFFF;
+          font-weight: 900;
+          text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+        
+        // Enhanced contrast for present keys
+        &.key-present {
+          background-color: var(--color-present);
+          border-color: #000000;
+          color: #000000;
+          font-weight: 900;
+        }
+        
+        // Enhanced contrast for absent keys
+        &.key-absent {
+          background-color: var(--color-absent);
+          border-color: #000000;
+          color: #FFFFFF;
+          font-weight: 700;
+        }
+        
+        // Special keys (ENTER, BACKSPACE) with more prominence
+        &.large {
+          border-width: 3px;
+          font-weight: 900;
+        }
+      }
+    }
+  }
+}
+
 .keyboard {
   margin-top: var(--spacing-md);
   display: flex;

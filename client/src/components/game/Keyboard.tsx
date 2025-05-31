@@ -1,7 +1,6 @@
 import { useGame } from '../../hooks/useGame';
 import type { TileState } from '../../types/game';
-import './Keyboard.scss';
-// Main keyboard styling is in styles/_keyboard.scss, component-specific overrides here
+// Keyboard styling is provided by global styles via _keyboard.scss
 
 const rows: string[][] = [
   ['Q','W','E','R','T','Y','U','I','O','P'],

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { ThemeContext, type Theme } from './ThemeContextDefinitions';
+import { ThemeContext, type Theme, type ThemeContextType } from './ThemeContextDefinitions';
 
 /**
  * Props for the ThemeProvider component
@@ -8,6 +8,7 @@ import { ThemeContext, type Theme } from './ThemeContextDefinitions';
 interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
+  defaultHighContrast?: boolean;
 }
 
 /**
@@ -16,7 +17,8 @@ interface ThemeProviderProps {
  */
 export const ThemeProvider = ({ 
   children, 
-  defaultTheme = 'light' 
+  defaultTheme = 'light',
+  defaultHighContrast = false
 }: ThemeProviderProps) => {
   // Initialize theme from localStorage or system preference if available
   const [theme, setTheme] = useState<Theme>(() => {
@@ -34,12 +36,24 @@ export const ThemeProvider = ({
     // Fall back to default theme
     return defaultTheme;
   });
+  
+  // Initialize high contrast mode from localStorage
+  const [highContrast, setHighContrast] = useState<boolean>(() => {
+    const savedHighContrast = localStorage.getItem('highContrast');
+    return savedHighContrast === 'true' || defaultHighContrast;
+  });
 
   // Update data-theme attribute on document when theme changes
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+  
+  // Update data-high-contrast attribute when high contrast mode changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-high-contrast', highContrast.toString());
+    localStorage.setItem('highContrast', highContrast.toString());
+  }, [highContrast]);
 
   // Listen for system theme preference changes
   useEffect(() => {
@@ -71,8 +85,21 @@ export const ThemeProvider = ({
   // Toggle between light and dark themes
   const toggleTheme = () => setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   
+  // Toggle high contrast mode
+  const toggleHighContrast = () => setHighContrast(prev => !prev);
+  
+  // Create the context value object that conforms to ThemeContextType
+  const contextValue: ThemeContextType = {
+    theme,
+    highContrast,
+    toggleTheme,
+    toggleHighContrast,
+    setTheme,
+    setHighContrast
+  };
+  
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

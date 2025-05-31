@@ -3,10 +3,13 @@ import { useSession } from './hooks/useSession';
 import { useTheme } from './hooks/useTheme';
 import { GameProvider } from './contexts/GameContext';
 import { useGame } from './hooks/useGame';
+import useNotifications from './hooks/useNotifications';
 import { SessionProvider } from './contexts/SessionContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import { AppBar, Container, Card } from './components/layout';
 import { Button } from './components/ui';
+import NotificationSystem from './components/ui/NotificationSystem';
 import { GameBoard, Keyboard } from './components/game';
 import StatisticsModal from './components/game/StatisticsModal';
 import NameEntryModal from './components/game/NameEntryModal';
@@ -18,7 +21,16 @@ function AppContent() {
   const nameSubmitted = Boolean(playerName);
   const [transitionActive, setTransitionActive] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  // Using type assertion to handle the extended ThemeContextType
+  const { theme, highContrast, toggleTheme, toggleHighContrast } = useTheme() as {
+    theme: 'light' | 'dark';
+    highContrast: boolean;
+    toggleTheme: () => void;
+    toggleHighContrast: () => void;
+    setTheme: (theme: 'light' | 'dark') => void;
+    setHighContrast: (enabled: boolean) => void;
+  };
+  const { showError, showSuccess } = useNotifications();
   const { 
     gameState, 
     addLetter, 
@@ -30,8 +42,17 @@ function AppContent() {
     errorMessage 
   } = useGame();
   
-  // Icon based on current theme
+  // Icons based on current theme and contrast settings
   const themeIcon = theme === 'dark' ? '☀️' : '🌙';
+  const contrastIcon = highContrast ? '🟩' : '🟥'; // Green/red square for contrast indicator
+  
+  // Watch for game errors and display them
+  useEffect(() => {
+    if (errorMessage) {
+      // Show error using notification system
+      showError(errorMessage, { duration: 3000 });
+    }
+  }, [errorMessage, showError]);
   
   // Handle theme toggle with transition effect
   const handleThemeToggle = () => {
@@ -47,6 +68,13 @@ function AppContent() {
         setTransitionActive(false);
       }, 500); // Match this to animation duration
     }, 50);
+  };
+  
+  // Handle high contrast mode toggle
+  const handleHighContrastToggle = () => {
+    // Show success notification when toggling high contrast mode
+    toggleHighContrast();
+    showSuccess(`High contrast mode ${highContrast ? 'disabled' : 'enabled'}`, { duration: 2000 });
   };
   
   // Handle keyboard input
@@ -125,13 +153,24 @@ function AppContent() {
           <AppBar 
             title="F&B Wordle" 
             rightAction={
-              <button 
-                className="btn-icon" 
-                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                onClick={handleThemeToggle}
-              >
-                {themeIcon}
-              </button>
+              <div className="app-bar-actions">
+                <button 
+                  className="btn-icon" 
+                  aria-label={`Toggle high contrast mode (${highContrast ? 'on' : 'off'})`}
+                  onClick={handleHighContrastToggle}
+                  title="High Contrast Mode"
+                >
+                  {contrastIcon}
+                </button>
+                <button 
+                  className="btn-icon" 
+                  aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                  onClick={handleThemeToggle}
+                  title={`${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                >
+                  {themeIcon}
+                </button>
+              </div>
             }
           />
           
@@ -150,13 +189,6 @@ function AppContent() {
                 
                 {/* Virtual keyboard */}
                 <Keyboard />
-                
-                {/* Error message display */}
-                {errorMessage && (
-                  <div className="error-message">
-                    {errorMessage}
-                  </div>
-                )}
                 
                 {/* Game status and controls */}
                 <div className="game-controls">
@@ -200,9 +232,12 @@ function App() {
   return (
     <ThemeProvider>
       <SessionProvider>
-        <GameProvider>
-          <AppContent />
-        </GameProvider>
+        <NotificationProvider>
+          <GameProvider>
+            <AppContent />
+            <NotificationSystem position="top" />
+          </GameProvider>
+        </NotificationProvider>
       </SessionProvider>
     </ThemeProvider>
   );
