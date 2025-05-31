@@ -1,58 +1,222 @@
-# Dependencies
-node_modules/
-.pnp/
-.pnp.js
+# Azure F&B Wordle - Comprehensive .gitignore
+# ==============================================
 
-# Build output
+# Dependencies and Package Management
+# ------------------------------------
+# Ensure node_modules are excluded everywhere
+node_modules/
+**/node_modules/
+**/node_modules/**
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/
+.npm/
+
+# Build Outputs and Distribution
+# ------------------------------
+# Vite (Frontend)
 dist/
+dist-ssr/
+*.local
+
+# TypeScript Build
+*.tsbuildinfo
+.tsbuildinfo
+
+# Production builds
 build/
 out/
-.next/
-.nuxt/
 
-# Testing
-coverage/
-.nyc_output/
-
-# Environment variables
+# Environment Variables and Secrets
+# ----------------------------------
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*.local
 
-# Debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+# Keep example environment files
+!.env.example
+!.env.sample
+
+# Azure Configuration and Secrets
+# --------------------------------
+.azure/
+local.settings.json
+.func/
+*.publish
+*.publishsettings
+.deployment
+deploy/
+
+# Azure Static Web Apps
+.vscode/settings.json
+staticwebapp.config.json.bak
+
+# IDE and Editor Files
+# --------------------
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# WebStorm/IntelliJ
+.idea/
+*.swp
+*.swo
+
+# Sublime Text
+*.sublime-workspace
+
+# Vim
+*.vim
+.netrwhist
+
+# Operating System Files
+# -----------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.nfs*
+
+# Testing and Coverage
+# --------------------
+coverage/
+*.lcov
+.nyc_output/
+.coverage/
+htmlcov/
+.pytest_cache/
+.vitest/
+
+# Test results
+test-results/
+playwright-report/
+test-results.xml
+
+# Logs and Cache
+# ---------------
 logs/
 *.log
-
-# IDE and editor files
-.idea/
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-*.sublime-project
-*.sublime-workspace
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Cache and temp files
 .cache/
+.parcel-cache/
+.eslintcache
+.stylelintcrace
+
+# Vite cache
+.vite/
+
+# Turbo cache (if using Turborepo)
+.turbo/
+
+# Development Tools Cache
+# -----------------------
+# ESLint
+.eslintcache
+
+# Prettier
+.prettiercache
+
+# TypeScript ESLint
+.tslintcache
+
+# Stylelint
+.stylelintcache
+
+# Temporary Files
+# ---------------
+*.tmp
+*.temp
 .tmp/
 .temp/
-.eslintcache
-.stylelintcache
-.turbo
+
+# Runtime and Process Files
+# -------------------------
+*.pid
+*.seed
+*.pid.lock
+
+# Memory dumps
+*.heapsnapshot
 
 # Miscellaneous
-.DS_Store
-Thumbs.db
+# -------------
+# Sass cache
+.sass-cache/
+
+# Lock files (keep one, ignore others)
+# If using npm, keep package-lock.json and ignore yarn.lock
+# If using yarn, keep yarn.lock and ignore package-lock.json
+# For this project, we're using npm:
+yarn.lock
+pnpm-lock.yaml
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Local development certificates
+*.pem
+*.key
+*.crt
+
+# Taskmaster AI specific files
+tasks/
+tasks.json
+taskmaster.config.json
+.taskmasterconfig
+scripts/task-complexity-report.json
+*.sqlite3
+
+# Cursor.sh and AI assistants configuration
+.cursor/
+.roo/
+.roomodes
+
+# Database files (if using local SQLite for development)
+*.db
+*.sqlite
+
+# Package manager patches
+.patch
+patches/
+
+# Azure Functions Core Tools
+bin/
+obj/
+
+# Serverless Framework
+.serverless/
+
+# Webpack Bundle Analyzer
+bundle-analyzer-report.html
+
+# Storybook build outputs
+storybook-static/
+
+# Next.js (if needed in future)
+.next/
+
+# Nuxt.js (if needed in future)
+.nuxt/

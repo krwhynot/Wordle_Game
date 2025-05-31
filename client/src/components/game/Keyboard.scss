@@ -1,0 +1,58 @@
+@use '../styles/variables';
+@use '../styles/mixins';
+
+.keyboard {
+  margin-top: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .keyboard-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: var(--spacing-sm);
+
+    .key {
+      flex: 1;
+      margin: 0 4px;
+      padding: var(--spacing-xs) 0;
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      user-select: none;
+      border: 1px solid var(--color-text-disabled);
+      background-color: var(--color-surface-variant);
+      color: var(--color-text-primary);
+      transition: background-color var(--animation-spring), color var(--animation-spring);
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      &.key-filled {
+        background-color: var(--color-surface);
+        border-color: var(--color-primary);
+      }
+
+      &.key-correct {
+        background-color: var(--color-correct);
+        border-color: var(--color-correct);
+        color: white;
+      }
+
+      &.key-present {
+        background-color: var(--color-present);
+        border-color: var(--color-present);
+        color: white;
+      }
+
+      &.key-absent {
+        background-color: var(--color-absent);
+        border-color: var(--color-absent);
+        color: var(--color-text-on-dark);
+      }
+    }
+  }
+}

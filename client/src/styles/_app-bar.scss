@@ -1,0 +1,98 @@
+// AppBar component styles
+@use 'variables';
+@use 'mixins';
+@use 'breakpoints';
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-fixed);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: var(--elevation-1);
+  transition: background-color var(--animation-spring), color var(--animation-spring);
+  
+  // Use flexbox for layout
+  @include mixins.flex-between;
+  
+  // Responsive height adjustments
+  height: 64px;
+  
+  @include breakpoints.media-sm {
+    height: 72px;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  // Transparent variant
+  &-transparent {
+    background-color: transparent;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: none;
+    border-bottom: 1px solid rgba(var(--color-text-primary-rgb, 0, 0, 0), 0.1);
+  }
+  
+  // Title styling
+  &-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    @include breakpoints.media-sm {
+      font-size: var(--font-size-xl);
+    }
+  }
+  
+  // Left and right action areas
+  &-left, &-right {
+    display: flex;
+    align-items: center;
+    min-width: 48px;
+    justify-content: center;
+  }
+}
+
+// Icon button styles for app bar
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-pill);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  transition: all var(--animation-spring);
+  font-size: 1.25rem;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  
+  [data-theme="dark"] & {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    &:active {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+}

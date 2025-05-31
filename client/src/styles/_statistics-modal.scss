@@ -1,0 +1,81 @@
+@use 'variables';
+@use 'mixins';
+
+.statistics-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-modal-backdrop);
+}
+
+.statistics-modal {
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--elevation-5);
+  position: relative;
+  z-index: var(--z-index-modal);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.distribution {
+  margin: var(--spacing-md) 0;
+}
+
+.distribution-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.distribution-bar .label {
+  width: var(--spacing-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.distribution-bar .bar {
+  background-color: var(--color-primary);
+  margin-left: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  height: var(--spacing-md);
+  position: relative;
+}
+
+.distribution-bar .bar span {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: var(--font-weight-bold);
+}
+
+.statistics-modal button.btn {
+  display: block;
+  margin: 0 auto;
+  margin-top: var(--spacing-lg);
+}
+
+/* Reset and Close buttons side by side */
+.statistics-modal .modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-lg);
+}
+
+.statistics-modal .btn-secondary {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+}

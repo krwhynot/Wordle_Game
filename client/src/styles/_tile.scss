@@ -1,0 +1,126 @@
+// Tile component styles
+@use 'variables';
+@use 'animations';
+@use 'mixins';
+
+.tile {
+  // Base tile styles
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  margin: 4px;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  user-select: none;
+  transition: all 200ms ease;
+  transform-style: preserve-3d;
+  position: relative;
+  
+  // Empty tile state
+  &-empty {
+    background-color: var(--color-surface-variant);
+    border: 2px solid var(--color-text-disabled);
+    color: var(--color-text-primary);
+  }
+  
+  // Filled tile state (before evaluation)
+  &-filled {
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    color: var(--color-text-primary);
+    box-shadow: var(--elevation-1);
+  }
+  
+  // Correct letter in correct position
+  &-correct {
+    background-color: var(--color-correct);
+    border: 2px solid var(--color-correct);
+    color: white;
+    box-shadow: var(--elevation-2);
+  }
+  
+  // Correct letter in wrong position
+  &-present {
+    background-color: var(--color-present);
+    border: 2px solid var(--color-present);
+    color: white;
+    box-shadow: var(--elevation-2);
+  }
+  
+  // Letter not in the word
+  &-absent {
+    background-color: var(--color-absent);
+    border: 2px solid var(--color-absent);
+    color: var(--color-text-on-dark);
+    box-shadow: var(--elevation-1);
+  }
+  
+  // Animation for tile flip
+  &.flip {
+    animation: flip-tile 500ms ease forwards;
+  }
+  
+  // Animation for tile shake (invalid word)
+  &.shake {
+    animation: shake-tile 600ms ease;
+  }
+  
+  // Animation for tile pop (when typing)
+  &.pop {
+    animation: pop-tile 100ms ease;
+  }
+  
+  // Responsive sizing for smaller screens
+  @media (max-width: 480px) {
+    width: 54px;
+    height: 54px;
+    margin: 3px;
+    font-size: var(--font-size-lg);
+  }
+  
+  @media (max-width: 360px) {
+    width: 48px;
+    height: 48px;
+    margin: 2px;
+    font-size: var(--font-size-md);
+  }
+}
+
+// Tile animations
+@keyframes flip-tile {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes shake-tile {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-4px);
+  }
+  40%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes pop-tile {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}

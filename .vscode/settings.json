@@ -18,5 +18,6 @@
   ],
   "jest.disabledWorkspaceFolders": [
     "server"
-  ]
+  ],
+  "git.ignoreLimitWarning": true
 }

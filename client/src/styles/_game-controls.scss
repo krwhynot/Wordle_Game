@@ -1,0 +1,57 @@
+// Game controls and status messages
+@use 'variables';
+@use 'mixins';
+
+.game-controls {
+  margin-top: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .btn {
+    margin-top: var(--spacing-md);
+  }
+}
+
+.game-result {
+  text-align: center;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-top: var(--spacing-md);
+  background-color: var(--color-surface-variant);
+  box-shadow: var(--elevation-1);
+  width: 100%;
+  max-width: 400px;
+  
+  [data-theme="dark"] & {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .success-message {
+    color: var(--color-correct);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-lg);
+  }
+  
+  .failure-message {
+    color: var(--color-error);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-lg);
+  }
+}
+
+// Additional styling for the game container
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  
+  .card {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

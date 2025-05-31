@@ -1,0 +1,944 @@
+# .windsurfrules - Azure F&B Wordle Project
+
+## Project Context
+
+### Project Overview
+**Project Name:** Azure F&B Wordle  
+**Project Type:** Progressive Web Application (PWA)  
+**Target Domain:** Food & Beverage Industry  
+**Primary Users:** F&B professionals, restaurant staff, culinary enthusiasts  
+
+### Project Description
+A mobile-first Wordle clone featuring Food & Beverage industry terminology, built with React 18+ and deployed on Azure cloud infrastructure. The application provides an engaging word-guessing experience with 3000 curated F&B terms, session-based gameplay, and Material 3 Expressive design language.
+
+### Main Goals
+- Create an engaging F&B-themed word game for industry professionals
+- Implement cost-optimized Azure cloud architecture (<$1/month for 10 users)
+- Provide responsive, accessible gameplay across all devices
+- Demonstrate modern React development patterns and Azure integration
+- Support offline gameplay and progressive web app capabilities
+- Enable session-based word tracking with 30-word rotation system
+
+### Target Metrics
+- Sub-3 second initial page load globally
+- Sub-200ms game interaction response times
+- 60fps animations on mobile devices
+- 99.9% uptime with Azure free tier services
+- Support 10-100 concurrent users without architecture changes
+
+## Technology Stack
+
+### Core Frontend Technologies
+- **React:** 18.3+ (with concurrent features, automatic batching)
+- **Build Tool:** Vite 5+ (replacing Create React App)
+- **Language:** TypeScript 5+ with strict type checking
+- **Styling:** SCSS with CSS custom properties for theming
+- **Testing:** Vitest + React Testing Library
+- **Linting:** ESLint + Prettier with TypeScript rules
+
+### UI/UX Framework
+- **Design System:** Material 3 Expressive (Android 16 design language)
+- **Animations:** CSS spring physics + optional Framer Motion for complex sequences
+- **Icons:** Material Design Icons or Lucide React
+- **Typography:** Montserrat (headings) + Roboto (body text)
+- **Color Palette:** Primary #06D6A0 (Turquoise), Accent #FFA552 (Tangerine), Background #EFF6F5
+
+### Backend & Cloud Services
+- **Hosting:** Azure Static Web Apps (Free Tier)
+- **API Runtime:** Azure Functions (Node.js 20+ runtime, Consumption plan)
+- **Database:** Azure Cosmos DB with MongoDB API (Free Tier: 1000 RU/s, 25GB)
+- **Domain:** Custom domain via Namecheap with Azure DNS integration
+- **Monitoring:** Azure Application Insights (Free Tier: 5GB/month)
+- **CI/CD:** GitHub Actions with Azure deployment
+
+### Development Tools
+- **Node.js:** 20+ LTS
+- **Package Manager:** npm with workspaces
+- **IDE Extensions:** TypeScript, ESLint, Prettier, Azure Tools
+- **Version Control:** Git with conventional commits
+
+### Technologies to Avoid
+- Create React App (replaced by Vite)
+- Class-based React components (use functional components + hooks)
+- localStorage/sessionStorage in artifacts (use React state)
+- jQuery or other DOM manipulation libraries
+- Bootstrap (conflicts with Material 3 Expressive)
+- Webpack (Vite handles bundling)
+
+## Project Structure
+
+```
+azure-fb-wordle/
+├── .github/
+│   └── workflows/
+│       ├── deploy-frontend.yml
+│       └── deploy-functions.yml
+├── packages/
+│   ├── client/                    # React frontend (Azure Static Web Apps)
+│   │   ├── public/
+│   │   │   ├── icons/
+│   │   │   ├── manifest.json
+│   │   │   └── index.html
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   │   ├── ui/            # Reusable UI components
+│   │   │   │   │   ├── Button/
+│   │   │   │   │   ├── Modal/
+│   │   │   │   │   └── Tile/
+│   │   │   │   ├── game/          # Game-specific components
+│   │   │   │   │   ├── GameBoard/
+│   │   │   │   │   ├── Keyboard/
+│   │   │   │   │   └── StatisticsModal/
+│   │   │   │   └── layout/        # Layout components
+│   │   │   │       ├── Header/
+│   │   │   │       └── Container/
+│   │   │   ├── contexts/          # React Context providers
+│   │   │   │   ├── GameContext.tsx
+│   │   │   │   ├── ThemeContext.tsx
+│   │   │   │   └── SessionContext.tsx
+│   │   │   ├── hooks/             # Custom React hooks
+│   │   │   │   ├── useGameLogic.ts
+│   │   │   │   ├── useWordValidation.ts
+│   │   │   │   └── useLocalStorage.ts
+│   │   │   ├── services/          # API service layer
+│   │   │   │   ├── api.ts
+│   │   │   │   ├── wordService.ts
+│   │   │   │   └── statsService.ts
+│   │   │   ├── styles/            # Global styles
+│   │   │   │   ├── _variables.scss
+│   │   │   │   ├── _mixins.scss
+│   │   │   │   ├── _animations.scss
+│   │   │   │   └── global.scss
+│   │   │   ├── types/             # TypeScript type definitions
+│   │   │   │   ├── game.ts
+│   │   │   │   ├── api.ts
+│   │   │   │   └── session.ts
+│   │   │   ├── utils/             # Utility functions
+│   │   │   │   ├── gameLogic.ts
+│   │   │   │   ├── wordValidation.ts
+│   │   │   │   └── storage.ts
+│   │   │   ├── App.tsx
+│   │   │   └── main.tsx
+│   │   ├── package.json
+│   │   ├── vite.config.ts
+│   │   └── tsconfig.json
+│   ├── server/                    # Azure Functions backend
+│   │   ├── src/
+│   │   │   ├── functions/
+│   │   │   │   ├── daily-word/
+│   │   │   │   ├── session-word/
+│   │   │   │   ├── validate-word/
+│   │   │   │   └── statistics/
+│   │   │   ├── services/
+│   │   │   │   ├── cosmosService.ts
+│   │   │   │   ├── wordService.ts
+│   │   │   │   └── cacheService.ts
+│   │   │   ├── utils/
+│   │   │   │   ├── crypto.ts
+│   │   │   │   └── validation.ts
+│   │   │   └── types/
+│   │   │       ├── api.ts
+│   │   │       └── database.ts
+│   │   ├── package.json
+│   │   ├── host.json
+│   │   └── local.settings.json
+│   └── shared/                    # Shared TypeScript types
+│       ├── src/
+│       │   ├── types/
+│       │   │   ├── game.ts
+│       │   │   ├── api.ts
+│       │   │   └── user.ts
+│       │   └── constants/
+│       │       ├── gameConfig.ts
+│       │       └── colors.ts
+│       └── package.json
+├── scripts/
+│   ├── import-words.js           # Word dictionary import script
+│   └── deploy.ps1               # PowerShell deployment script
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── API.md
+├── package.json                  # Root workspace configuration
+├── .gitignore
+├── .eslintrc.js
+├── .prettierrc
+└── README.md
+```
+
+## Development Guidelines
+
+### Coding Style & Conventions
+
+#### TypeScript Standards
+- Use strict TypeScript configuration with `noImplicitAny`, `strictNullChecks`
+- Prefer interfaces over types for object shapes
+- Use explicit return types for all functions
+- Implement proper error boundaries and error handling
+- Use enums for constants with multiple related values
+
+#### React Patterns
+- Functional components only (no class components)
+- Custom hooks for complex logic extraction
+- Context API for global state management
+- Props drilling should not exceed 2 levels
+- Use React.memo() for expensive rendering optimizations
+- Implement proper cleanup in useEffect hooks
+
+#### Naming Conventions
+```typescript
+// Files: PascalCase for components, camelCase for utilities
+GameBoard.tsx
+wordValidation.ts
+
+// Components: PascalCase
+const GameBoard: React.FC = () => { }
+
+// Hooks: camelCase starting with 'use'
+const useGameLogic = () => { }
+
+// Constants: SCREAMING_SNAKE_CASE
+const MAX_ATTEMPTS = 6;
+
+// CSS Classes: kebab-case with BEM methodology
+.game-board__tile--correct { }
+```
+
+#### Code Organization
+- One component per file
+- Export components as default, utilities as named exports
+- Group imports: React, third-party, local utilities, local components
+- Use barrel exports (index.ts) for clean imports
+- Implement proper TypeScript path aliases (@/components, @/utils)
+
+### Material 3 Expressive Implementation
+
+#### Animation Guidelines
+```scss
+// Springy animation timing functions
+$spring-timing: cubic-bezier(0.34, 1.56, 0.64, 1);
+$timing-fast: 150ms;
+$timing-medium: 300ms;
+$timing-springy: 250ms $spring-timing;
+
+// Animation classes
+.tile-flip {
+  animation: flipTile $timing-springy;
+  transform-style: preserve-3d;
+}
+
+.tile-pop {
+  animation: popTile $timing-fast ease-out;
+}
+```
+
+#### Color System Implementation
+```scss
+// CSS Custom Properties for dynamic theming
+:root {
+  --color-primary: #06D6A0;
+  --color-accent: #FFA552;
+  --color-background: #EFF6F5;
+  --color-surface: #FFFFFF;
+  --color-on-surface: #1C1B1F;
+  
+  // Semantic game colors
+  --color-correct: var(--color-primary);
+  --color-present: var(--color-accent);
+  --color-absent: #787C7E;
+}
+
+[data-theme="dark"] {
+  --color-background: #121212;
+  --color-surface: #1E1E1E;
+  --color-on-surface: #E1E1E1;
+}
+```
+
+### API Design Patterns
+
+#### Function Structure
+```typescript
+// Azure Function template
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+
+export async function dailyWord(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+    try {
+        // Input validation
+        const { date } = await request.json();
+        
+        // Business logic
+        const word = await wordService.getDailyWord(date);
+        
+        // Response formatting
+        return {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ word, date })
+        };
+    } catch (error) {
+        context.error('Daily word error:', error);
+        return {
+            status: 500,
+            body: JSON.stringify({ error: 'Internal server error' })
+        };
+    }
+}
+
+app.http('daily-word', {
+    methods: ['GET'],
+    route: 'daily-word/{date?}',
+    handler: dailyWord
+});
+```
+
+### Testing Strategy
+
+#### Unit Testing
+- Test all game logic functions with Vitest
+- Mock Azure Functions for integration tests
+- Achieve 80%+ code coverage on business logic
+- Use React Testing Library for component tests
+
+#### Component Testing
+```typescript
+// Example component test
+import { render, screen, fireEvent } from '@testing-library/react';
+import { GameBoard } from './GameBoard';
+
+describe('GameBoard', () => {
+  it('should display correct tile states', () => {
+    render(<GameBoard attempts={mockAttempts} />);
+    
+    const correctTile = screen.getByTestId('tile-0-0');
+    expect(correctTile).toHaveClass('tile--correct');
+  });
+});
+```
+
+### Performance Optimization
+
+#### React Performance
+- Implement React.memo for static components
+- Use useMemo for expensive calculations
+- Implement proper dependency arrays in useEffect
+- Lazy load non-critical components
+- Optimize re-renders with useCallback
+
+#### Azure Functions Performance
+- Implement in-memory caching for daily words
+- Use connection pooling for Cosmos DB
+- Minimize cold start times with proper bundling
+- Implement proper error handling and retries
+
+#### Web Performance
+- Implement service worker for offline capabilities
+- Use Vites code splitting for optimal bundle sizes
+- Compress images and optimize static assets
+- Implement proper caching headers
+
+### Security Requirements
+
+#### Client-Side Security
+- Implement Content Security Policy (CSP) headers
+- Validate all user inputs before API calls
+- Use HTTPS exclusively (enforced by Azure Static Web Apps)
+- Implement proper error boundaries to prevent information leakage
+
+#### API Security
+- Input validation using Azure Functions middleware
+- Rate limiting per IP address (100 requests/minute)
+- CORS configuration for specific domains only
+- Implement proper error messages without exposing internals
+
+#### Data Privacy
+- No personally identifiable information stored
+- Session data limited to game state and preferences
+- Anonymous analytics collection only
+- GDPR-compliant data handling
+
+## Workflow Protocols
+
+### AI-Assisted Development Guidelines
+
+#### When to Request AI Help
+1. **Architecture decisions** requiring technology comparison
+2. **Complex React patterns** for state management
+3. **Azure service configuration** and optimization
+4. **Performance bottleneck resolution**
+5. **Material 3 Expressive implementation** details
+6. **Cross-browser compatibility** issues
+
+#### AI Interaction Patterns
+// Request Format for Complex Components
+"Create a React component for [specific functionality] that:
+- Follows Material 3 Expressive design patterns
+- Implements proper TypeScript typing
+- Uses the established color system
+- Includes accessibility features
+- Handles loading and error states"
+
+// Request Format for Azure Functions
+"Create an Azure Function that:
+- Follows the established project structure
+- Implements proper error handling
+- Uses TypeScript with strict typing
+- Includes input validation
+- Follows the API response format"
+
+
+#### Code Review Checklist with AI
+- TypeScript strict mode compliance
+- Material 3 Expressive design adherence
+- Performance optimization opportunities
+- Accessibility compliance (ARIA labels, keyboard navigation)
+- Error handling implementation
+- Test coverage for new functionality
+
+### Development Workflow
+
+#### Feature Development Process
+1. **Design Review**: Ensure Material 3 Expressive compliance
+2. **Type Definition**: Create/update TypeScript interfaces
+3. **Component Creation**: Build with accessibility and performance in mind
+4. **Testing**: Unit tests for logic, integration tests for API
+5. **Performance Check**: Verify 60fps animations and sub-200ms responses
+6. **Azure Integration**: Test with actual Azure services
+7. **Mobile Testing**: Verify responsive design and touch interactions
+
+#### Git Workflow
+- Use conventional commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`
+- Feature branches from main: `feature/game-board-animations`
+- Pull request template includes performance and accessibility checklist
+- Automated Azure deployment on merge to main
+
+### Custom Rules for AI Interaction
+
+#### Project-Specific Context
+When working on this project, always consider:
+- **Target Audience**: F&B industry professionals with varying technical literacy
+- **Device Constraints**: Mobile-first design with touch optimization
+- **Performance Budget**: Sub-3 second load times, 60fps animations
+- **Cost Constraints**: Leverage Azure free tiers, optimize for <$1/month
+- **Accessibility**: WCAG 2.1 AA compliance for inclusive design
+
+#### Food & Beverage Domain Knowledge
+- Use authentic F&B terminology in word lists and UI
+- Consider restaurant workflow patterns in UX design
+- Implement difficulty levels based on industry specialization
+- Include culinary education value in game design
+
+#### Azure-Specific Considerations
+- Always leverage free tier limitations before suggesting upgrades
+- Optimize for Azure Functions cold start performance
+- Consider Cosmos DB RU consumption in API design
+- Implement proper Azure Static Web Apps routing
+
+#### Material 3 Expressive Specifics
+- Prioritize springy, physics-based animations
+- Implement proper depth with background blur effects
+- Use dynamic color theming throughout the application
+- Ensure haptic feedback on supported devices
+- Follow emphasis hierarchy with typography choices
+
+### Special Instructions
+
+#### Known Challenges
+1. **Azure Functions Cold Starts**: Implement warming strategies and optimize bundle sizes
+2. **Mobile Safari Compatibility**: Test thoroughly on iOS Safari for PWA features
+3. **Cosmos DB Free Tier Limits**: Monitor RU consumption and implement efficient queries
+4. **Material 3 Expressive Browser Support**: Ensure graceful degradation for unsupported features
+
+#### Emergency Response
+- If Azure services exceed free tier limits, implement immediate cost alerts
+- If performance degrades below targets, prioritize critical path optimization
+- If accessibility issues arise, pause feature development until resolved
+
+#### Success Metrics Monitoring
+- Continuously monitor Core Web Vitals scores
+- Track Azure service usage against free tier limits
+- Monitor user engagement metrics for game completion rates
+- Verify cross-platform compatibility in automated testing
+
+---
+
+**Last Updated**: May 30, 2025  
+**Project Lead**: Default User  
+**Target Launch**: Q3 2025  
+**Current Phase**: Architecture & Initial Development
+
+# Added by Task Master - Development Workflow Rules
+
+Below you will find a variety of important rules spanning:
+- the dev_workflow
+- the .windsurfrules document self-improvement workflow
+- the template to follow when modifying or adding new sections/rules to this document.
+
+---
+DEV_WORKFLOW
+---
+description: Guide for using meta-development script (scripts/dev.js) to manage task-driven development workflows
+globs: **/*
+filesToApplyRule: **/*
+alwaysApply: true
+---
+
+- **Global CLI Commands**
+  - Task Master now provides a global CLI through the `task-master` command
+  - All functionality from `scripts/dev.js` is available through this interface
+  - Install globally with `npm install -g claude-task-master` or use locally via `npx`
+  - Use `task-master <command>` instead of `node scripts/dev.js <command>`
+  - Examples:
+    - `task-master list` instead of `node scripts/dev.js list`
+    - `task-master next` instead of `node scripts/dev.js next`
+    - `task-master expand --id=3` instead of `node scripts/dev.js expand --id=3`
+  - All commands accept the same options as their script equivalents
+  - The CLI provides additional commands like `task-master init` for project setup
+
+- **Development Workflow Process**
+  - Start new projects by running `task-master init` or `node scripts/dev.js parse-prd --input=<prd-file.txt>` to generate initial tasks.json
+  - Begin coding sessions with `task-master list` to see current tasks, status, and IDs
+  - Analyze task complexity with `task-master analyze-complexity --research` before breaking down tasks
+  - Select tasks based on dependencies (all marked 'done'), priority level, and ID order
+  - Clarify tasks by checking task files in tasks/ directory or asking for user input
+  - View specific task details using `task-master show <id>` to understand implementation requirements
+  - Break down complex tasks using `task-master expand --id=<id>` with appropriate flags
+  - Clear existing subtasks if needed using `task-master clear-subtasks --id=<id>` before regenerating
+  - Implement code following task details, dependencies, and project standards
+  - Verify tasks according to test strategies before marking as complete
+  - Mark completed tasks with `task-master set-status --id=<id> --status=done`
+  - Update dependent tasks when implementation differs from original plan
+  - Generate task files with `task-master generate` after updating tasks.json
+  - Maintain valid dependency structure with `task-master fix-dependencies` when needed
+  - Respect dependency chains and task priorities when selecting work
+  - Report progress regularly using the list command
+
+- **Task Complexity Analysis**
+  - Run `node scripts/dev.js analyze-complexity --research` for comprehensive analysis
+  - Review complexity report in scripts/task-complexity-report.json
+  - Or use `node scripts/dev.js complexity-report` for a formatted, readable version of the report
+  - Focus on tasks with highest complexity scores (8-10) for detailed breakdown
+  - Use analysis results to determine appropriate subtask allocation
+  - Note that reports are automatically used by the expand command
+
+- **Task Breakdown Process**
+  - For tasks with complexity analysis, use `node scripts/dev.js expand --id=<id>`
+  - Otherwise use `node scripts/dev.js expand --id=<id> --subtasks=<number>`
+  - Add `--research` flag to leverage Perplexity AI for research-backed expansion
+  - Use `--prompt="<context>"` to provide additional context when needed
+  - Review and adjust generated subtasks as necessary
+  - Use `--all` flag to expand multiple pending tasks at once
+  - If subtasks need regeneration, clear them first with `clear-subtasks` command
+
+- **Implementation Drift Handling**
+  - When implementation differs significantly from planned approach
+  - When future tasks need modification due to current implementation choices
+  - When new dependencies or requirements emerge
+  - Call `node scripts/dev.js update --from=<futureTaskId> --prompt="<explanation>"` to update tasks.json
+
+- **Task Status Management**
+  - Use 'pending' for tasks ready to be worked on
+  - Use 'done' for completed and verified tasks
+  - Use 'deferred' for postponed tasks
+  - Add custom status values as needed for project-specific workflows
+
+- **Task File Format Reference**
+  ```
+  # Task ID: <id>
+  # Title: <title>
+  # Status: <status>
+  # Dependencies: <comma-separated list of dependency IDs>
+  # Priority: <priority>
+  # Description: <brief description>
+  # Details:
+  <detailed implementation notes>
+  
+  # Test Strategy:
+  <verification approach>
+  ```
+
+- **Command Reference: parse-prd**
+  - Legacy Syntax: `node scripts/dev.js parse-prd --input=<prd-file.txt>`
+  - CLI Syntax: `task-master parse-prd --input=<prd-file.txt>`
+  - Description: Parses a PRD document and generates a tasks.json file with structured tasks
+  - Parameters: 
+    - `--input=<file>`: Path to the PRD text file (default: sample-prd.txt)
+  - Example: `task-master parse-prd --input=requirements.txt`
+  - Notes: Will overwrite existing tasks.json file. Use with caution.
+
+- **Command Reference: update**
+  - Legacy Syntax: `node scripts/dev.js update --from=<id> --prompt="<prompt>"`
+  - CLI Syntax: `task-master update --from=<id> --prompt="<prompt>"`
+  - Description: Updates tasks with ID >= specified ID based on the provided prompt
+  - Parameters:
+    - `--from=<id>`: Task ID from which to start updating (required)
+    - `--prompt="<text>"`: Explanation of changes or new context (required)
+  - Example: `task-master update --from=4 --prompt="Now we are using Express instead of Fastify."`
+  - Notes: Only updates tasks not marked as 'done'. Completed tasks remain unchanged.
+
+- **Command Reference: generate**
+  - Legacy Syntax: `node scripts/dev.js generate`
+  - CLI Syntax: `task-master generate`
+  - Description: Generates individual task files in tasks/ directory based on tasks.json
+  - Parameters: 
+    - `--file=<path>, -f`: Use alternative tasks.json file (default: 'tasks/tasks.json')
+    - `--output=<dir>, -o`: Output directory (default: 'tasks')
+  - Example: `task-master generate`
+  - Notes: Overwrites existing task files. Creates tasks/ directory if needed.
+
+- **Command Reference: set-status**
+  - Legacy Syntax: `node scripts/dev.js set-status --id=<id> --status=<status>`
+  - CLI Syntax: `task-master set-status --id=<id> --status=<status>`
+  - Description: Updates the status of a specific task in tasks.json
+  - Parameters:
+    - `--id=<id>`: ID of the task to update (required)
+    - `--status=<status>`: New status value (required)
+  - Example: `task-master set-status --id=3 --status=done`
+  - Notes: Common values are 'done', 'pending', and 'deferred', but any string is accepted.
+
+- **Command Reference: list**
+  - Legacy Syntax: `node scripts/dev.js list`
+  - CLI Syntax: `task-master list`
+  - Description: Lists all tasks in tasks.json with IDs, titles, and status
+  - Parameters: 
+    - `--status=<status>, -s`: Filter by status
+    - `--with-subtasks`: Show subtasks for each task
+    - `--file=<path>, -f`: Use alternative tasks.json file (default: 'tasks/tasks.json')
+  - Example: `task-master list`
+  - Notes: Provides quick overview of project progress. Use at start of sessions.
+
+- **Command Reference: expand**
+  - Legacy Syntax: `node scripts/dev.js expand --id=<id> [--num=<number>] [--research] [--prompt="<context>"]`
+  - CLI Syntax: `task-master expand --id=<id> [--num=<number>] [--research] [--prompt="<context>"]`
+  - Description: Expands a task with subtasks for detailed implementation
+  - Parameters:
+    - `--id=<id>`: ID of task to expand (required unless using --all)
+    - `--all`: Expand all pending tasks, prioritized by complexity
+    - `--num=<number>`: Number of subtasks to generate (default: from complexity report)
+    - `--research`: Use Perplexity AI for research-backed generation
+    - `--prompt="<text>"`: Additional context for subtask generation
+    - `--force`: Regenerate subtasks even for tasks that already have them
+  - Example: `task-master expand --id=3 --num=5 --research --prompt="Focus on security aspects"`
+  - Notes: Uses complexity report recommendations if available.
+
+- **Command Reference: analyze-complexity**
+  - Legacy Syntax: `node scripts/dev.js analyze-complexity [options]`
+  - CLI Syntax: `task-master analyze-complexity [options]`
+  - Description: Analyzes task complexity and generates expansion recommendations
+  - Parameters:
+    - `--output=<file>, -o`: Output file path (default: scripts/task-complexity-report.json)
+    - `--model=<model>, -m`: Override LLM model to use
+    - `--threshold=<number>, -t`: Minimum score for expansion recommendation (default: 5)
+    - `--file=<path>, -f`: Use alternative tasks.json file
+    - `--research, -r`: Use Perplexity AI for research-backed analysis
+  - Example: `task-master analyze-complexity --research`
+  - Notes: Report includes complexity scores, recommended subtasks, and tailored prompts.
+
+- **Command Reference: clear-subtasks**
+  - Legacy Syntax: `node scripts/dev.js clear-subtasks --id=<id>`
+  - CLI Syntax: `task-master clear-subtasks --id=<id>`
+  - Description: Removes subtasks from specified tasks to allow regeneration
+  - Parameters:
+    - `--id=<id>`: ID or comma-separated IDs of tasks to clear subtasks from
+    - `--all`: Clear subtasks from all tasks
+  - Examples:
+    - `task-master clear-subtasks --id=3`
+    - `task-master clear-subtasks --id=1,2,3`
+    - `task-master clear-subtasks --all`
+  - Notes: 
+    - Task files are automatically regenerated after clearing subtasks
+    - Can be combined with expand command to immediately generate new subtasks
+    - Works with both parent tasks and individual subtasks
+
+- **Task Structure Fields**
+  - **id**: Unique identifier for the task (Example: `1`)
+  - **title**: Brief, descriptive title (Example: `"Initialize Repo"`)
+  - **description**: Concise summary of what the task involves (Example: `"Create a new repository, set up initial structure."`)
+  - **status**: Current state of the task (Example: `"pending"`, `"done"`, `"deferred"`)
+  - **dependencies**: IDs of prerequisite tasks (Example: `[1, 2]`)
+    - Dependencies are displayed with status indicators (✅ for completed, ⏱️ for pending)
+    - This helps quickly identify which prerequisite tasks are blocking work
+  - **priority**: Importance level (Example: `"high"`, `"medium"`, `"low"`)
+  - **details**: In-depth implementation instructions (Example: `"Use GitHub client ID/secret, handle callback, set session token."`)
+  - **testStrategy**: Verification approach (Example: `"Deploy and call endpoint to confirm 'Hello World' response."`)
+  - **subtasks**: List of smaller, more specific tasks (Example: `[{"id": 1, "title": "Configure OAuth", ...}]`)
+
+- **Environment Variables Configuration**
+  - **ANTHROPIC_API_KEY** (Required): Your Anthropic API key for Claude (Example: `ANTHROPIC_API_KEY=sk-ant-api03-...`)
+  - **MODEL** (Default: `"claude-3-7-sonnet-20250219"`): Claude model to use (Example: `MODEL=claude-3-opus-20240229`)
+  - **MAX_TOKENS** (Default: `"4000"`): Maximum tokens for responses (Example: `MAX_TOKENS=8000`)
+  - **TEMPERATURE** (Default: `"0.7"`): Temperature for model responses (Example: `TEMPERATURE=0.5`)
+  - **DEBUG** (Default: `"false"`): Enable debug logging (Example: `DEBUG=true`)
+  - **TASKMASTER_LOG_LEVEL** (Default: `"info"`): Console output level (Example: `TASKMASTER_LOG_LEVEL=debug`)
+  - **DEFAULT_SUBTASKS** (Default: `"3"`): Default subtask count (Example: `DEFAULT_SUBTASKS=5`)
+  - **DEFAULT_PRIORITY** (Default: `"medium"`): Default priority (Example: `DEFAULT_PRIORITY=high`)
+  - **PROJECT_NAME** (Default: `"MCP SaaS MVP"`): Project name in metadata (Example: `PROJECT_NAME=My Awesome Project`)
+  - **PROJECT_VERSION** (Default: `"1.0.0"`): Version in metadata (Example: `PROJECT_VERSION=2.1.0`)
+  - **PERPLEXITY_API_KEY**: For research-backed features (Example: `PERPLEXITY_API_KEY=pplx-...`)
+  - **PERPLEXITY_MODEL** (Default: `"sonar-medium-online"`): Perplexity model (Example: `PERPLEXITY_MODEL=sonar-large-online`)
+
+- **Determining the Next Task**
+  - Run `task-master next` to show the next task to work on
+  - The next command identifies tasks with all dependencies satisfied
+  - Tasks are prioritized by priority level, dependency count, and ID
+  - The command shows comprehensive task information including:
+    - Basic task details and description
+    - Implementation details
+    - Subtasks (if they exist)
+    - Contextual suggested actions
+  - Recommended before starting any new development work
+  - Respects your project's dependency structure
+  - Ensures tasks are completed in the appropriate sequence
+  - Provides ready-to-use commands for common task actions
+
+- **Viewing Specific Task Details**
+  - Run `task-master show <id>` or `task-master show --id=<id>` to view a specific task
+  - Use dot notation for subtasks: `task-master show 1.2` (shows subtask 2 of task 1)
+  - Displays comprehensive information similar to the next command, but for a specific task
+  - For parent tasks, shows all subtasks and their current status
+  - For subtasks, shows parent task information and relationship
+  - Provides contextual suggested actions appropriate for the specific task
+  - Useful for examining task details before implementation or checking status
+
+- **Managing Task Dependencies**
+  - Use `task-master add-dependency --id=<id> --depends-on=<id>` to add a dependency
+  - Use `task-master remove-dependency --id=<id> --depends-on=<id>` to remove a dependency
+  - The system prevents circular dependencies and duplicate dependency entries
+  - Dependencies are checked for existence before being added or removed
+  - Task files are automatically regenerated after dependency changes
+  - Dependencies are visualized with status indicators in task listings and files
+
+- **Command Reference: add-dependency**
+  - Legacy Syntax: `node scripts/dev.js add-dependency --id=<id> --depends-on=<id>`
+  - CLI Syntax: `task-master add-dependency --id=<id> --depends-on=<id>`
+  - Description: Adds a dependency relationship between two tasks
+  - Parameters:
+    - `--id=<id>`: ID of task that will depend on another task (required)
+    - `--depends-on=<id>`: ID of task that will become a dependency (required)
+  - Example: `task-master add-dependency --id=22 --depends-on=21`
+  - Notes: Prevents circular dependencies and duplicates; updates task files automatically
+
+- **Command Reference: remove-dependency**
+  - Legacy Syntax: `node scripts/dev.js remove-dependency --id=<id> --depends-on=<id>`
+  - CLI Syntax: `task-master remove-dependency --id=<id> --depends-on=<id>`
+  - Description: Removes a dependency relationship between two tasks
+  - Parameters:
+    - `--id=<id>`: ID of task to remove dependency from (required)
+    - `--depends-on=<id>`: ID of task to remove as a dependency (required)
+  - Example: `task-master remove-dependency --id=22 --depends-on=21`
+  - Notes: Checks if dependency actually exists; updates task files automatically
+
+- **Command Reference: validate-dependencies**
+  - Legacy Syntax: `node scripts/dev.js validate-dependencies [options]`
+  - CLI Syntax: `task-master validate-dependencies [options]`
+  - Description: Checks for and identifies invalid dependencies in tasks.json and task files
+  - Parameters:
+    - `--file=<path>, -f`: Use alternative tasks.json file (default: 'tasks/tasks.json')
+  - Example: `task-master validate-dependencies`
+  - Notes: 
+    - Reports all non-existent dependencies and self-dependencies without modifying files
+    - Provides detailed statistics on task dependency state
+    - Use before fix-dependencies to audit your task structure
+
+- **Command Reference: fix-dependencies**
+  - Legacy Syntax: `node scripts/dev.js fix-dependencies [options]`
+  - CLI Syntax: `task-master fix-dependencies [options]`
+  - Description: Finds and fixes all invalid dependencies in tasks.json and task files
+  - Parameters:
+    - `--file=<path>, -f`: Use alternative tasks.json file (default: 'tasks/tasks.json')
+  - Example: `task-master fix-dependencies`
+  - Notes: 
+    - Removes references to non-existent tasks and subtasks
+    - Eliminates self-dependencies (tasks depending on themselves)
+    - Regenerates task files with corrected dependencies
+    - Provides detailed report of all fixes made
+
+- **Command Reference: complexity-report**
+  - Legacy Syntax: `node scripts/dev.js complexity-report [options]`
+  - CLI Syntax: `task-master complexity-report [options]`
+  - Description: Displays the task complexity analysis report in a formatted, easy-to-read way
+  - Parameters:
+    - `--file=<path>, -f`: Path to the complexity report file (default: 'scripts/task-complexity-report.json')
+  - Example: `task-master complexity-report`
+  - Notes: 
+    - Shows tasks organized by complexity score with recommended actions
+    - Provides complexity distribution statistics
+    - Displays ready-to-use expansion commands for complex tasks
+    - If no report exists, offers to generate one interactively
+
+- **Command Reference: add-task**
+  - CLI Syntax: `task-master add-task [options]`
+  - Description: Add a new task to tasks.json using AI
+  - Parameters:
+    - `--file=<path>, -f`: Path to the tasks file (default: 'tasks/tasks.json')
+    - `--prompt=<text>, -p`: Description of the task to add (required)
+    - `--dependencies=<ids>, -d`: Comma-separated list of task IDs this task depends on
+    - `--priority=<priority>`: Task priority (high, medium, low) (default: 'medium')
+  - Example: `task-master add-task --prompt="Create user authentication using Auth0"`
+  - Notes: Uses AI to convert description into structured task with appropriate details
+
+- **Command Reference: init**
+  - CLI Syntax: `task-master init`
+  - Description: Initialize a new project with Task Master structure
+  - Parameters: None
+  - Example: `task-master init`
+  - Notes: 
+    - Creates initial project structure with required files
+    - Prompts for project settings if not provided
+    - Merges with existing files when appropriate
+    - Can be used to bootstrap a new Task Master project quickly
+
+- **Code Analysis & Refactoring Techniques**
+  - **Top-Level Function Search**
+    - Use grep pattern matching to find all exported functions across the codebase
+    - Command: `grep -E "export (function|const) \w+|function \w+\(|const \w+ = \(|module\.exports" --include="*.js" -r ./`
+    - Benefits:
+      - Quickly identify all public API functions without reading implementation details
+      - Compare functions between files during refactoring (e.g., monolithic to modular structure)
+      - Verify all expected functions exist in refactored modules
+      - Identify duplicate functionality or naming conflicts
+    - Usage examples:
+      - When migrating from `scripts/dev.js` to modular structure: `grep -E "function \w+\(" scripts/dev.js`
+      - Check function exports in a directory: `grep -E "export (function|const)" scripts/modules/`
+      - Find potential naming conflicts: `grep -E "function (get|set|create|update)\w+\(" -r ./`
+    - Variations:
+      - Add `-n` flag to include line numbers
+      - Add `--include="*.ts"` to filter by file extension
+      - Use with `| sort` to alphabetize results
+    - Integration with refactoring workflow:
+      - Start by mapping all functions in the source file
+      - Create target module files based on function grouping
+      - Verify all functions were properly migrated
+      - Check for any unintentional duplications or omissions
+
+---
+WINDSURF_RULES
+---
+description: Guidelines for creating and maintaining Windsurf rules to ensure consistency and effectiveness.
+globs: .windsurfrules
+filesToApplyRule: .windsurfrules
+alwaysApply: true
+---
+The below describes how you should be structuring new rule sections in this document.
+- **Required Rule Structure:**
+  ```markdown
+  ---
+  description: Clear, one-line description of what the rule enforces
+  globs: path/to/files/*.ext, other/path/**/*
+  alwaysApply: boolean
+  ---
+
+  - **Main Points in Bold**
+    - Sub-points with details
+    - Examples and explanations
+  ```
+
+- **Section References:**
+  - Use `ALL_CAPS_SECTION` to reference files
+  - Example: `WINDSURF_RULES`
+
+- **Code Examples:**
+  - Use language-specific code blocks
+  ```typescript
+  // ✅ DO: Show good examples
+  const goodExample = true;
+  
+  // ❌ DON'T: Show anti-patterns
+  const badExample = false;
+  ```
+
+- **Rule Content Guidelines:**
+  - Start with high-level overview
+  - Include specific, actionable requirements
+  - Show examples of correct implementation
+  - Reference existing code when possible
+  - Keep rules DRY by referencing other rules
+
+- **Rule Maintenance:**
+  - Update rules when new patterns emerge
+  - Add examples from actual codebase
+  - Remove outdated patterns
+  - Cross-reference related rules
+
+- **Best Practices:**
+  - Use bullet points for clarity
+  - Keep descriptions concise
+  - Include both DO and DON'T examples
+  - Reference actual code over theoretical examples
+  - Use consistent formatting across rules 
+
+---
+SELF_IMPROVE
+---
+description: Guidelines for continuously improving this rules document based on emerging code patterns and best practices.
+globs: **/*
+filesToApplyRule: **/*
+alwaysApply: true
+---
+
+- **Rule Improvement Triggers:**
+  - New code patterns not covered by existing rules
+  - Repeated similar implementations across files
+  - Common error patterns that could be prevented
+  - New libraries or tools being used consistently
+  - Emerging best practices in the codebase
+
+- **Analysis Process:**
+  - Compare new code with existing rules
+  - Identify patterns that should be standardized
+  - Look for references to external documentation
+  - Check for consistent error handling patterns
+  - Monitor test patterns and coverage
+
+- **Rule Updates:**
+  - **Add New Rules When:**
+    - A new technology/pattern is used in 3+ files
+    - Common bugs could be prevented by a rule
+    - Code reviews repeatedly mention the same feedback
+    - New security or performance patterns emerge
+
+  - **Modify Existing Rules When:**
+    - Better examples exist in the codebase
+    - Additional edge cases are discovered
+    - Related rules have been updated
+    - Implementation details have changed
+
+- **Example Pattern Recognition:**
+  ```typescript
+  // If you see repeated patterns like:
+  const data = await prisma.user.findMany({
+    select: { id: true, email: true },
+    where: { status: 'ACTIVE' }
+  });
+  
+  // Consider adding a PRISMA section in the .windsurfrules:
+  // - Standard select fields
+  // - Common where conditions
+  // - Performance optimization patterns
+  ```
+
+- **Rule Quality Checks:**
+  - Rules should be actionable and specific
+  - Examples should come from actual code
+  - References should be up to date
+  - Patterns should be consistently enforced
+
+- **Continuous Improvement:**
+  - Monitor code review comments
+  - Track common development questions
+  - Update rules after major refactors
+  - Add links to relevant documentation
+  - Cross-reference related rules
+
+- **Rule Deprecation:**
+  - Mark outdated patterns as deprecated
+  - Remove rules that no longer apply
+  - Update references to deprecated rules
+  - Document migration paths for old patterns
+
+- **Documentation Updates:**
+  - Keep examples synchronized with code
+  - Update references to external docs
+  - Maintain links between related rules
+  - Document breaking changes
+
+Follow WINDSURF_RULES for proper rule formatting and structure of windsurf rule sections.
