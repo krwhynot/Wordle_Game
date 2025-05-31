@@ -10,7 +10,8 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "preview": "vite preview",
-    "e2e": "npx playwright test"
+    "e2e": "npx playwright test",
+    "clean": "rm -rf node_modules"
   },
   "dependencies": {
     "framer-motion": "^12.15.0",
