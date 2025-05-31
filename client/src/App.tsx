@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
-import { GameProvider, useGame } from './contexts/GameContext';
-import { SessionProvider, useSession } from './contexts/SessionContext';
+import { useSession } from './hooks/useSession';
+// Using relative import with explicit extension to resolve module not found error
+import { useTheme } from './hooks/useTheme.ts';
+import { GameProvider } from './contexts/GameContext';
+import { useGame } from './hooks/useGame';
+import { SessionProvider } from './contexts/SessionContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { AppBar, Container, Card } from './components/layout';
 import { Button } from './components/ui';
 import { GameBoard, Keyboard } from './components/game';
@@ -11,8 +15,8 @@ import './styles/global.scss';
 
 // Inner component that uses the theme and game contexts
 function AppContent() {
-  const { session, setPlayerName } = useSession();
-  const nameSubmitted = Boolean(session.playerName);
+  const { playerName, setPlayerName } = useSession();
+  const nameSubmitted = Boolean(playerName);
   const [transitionActive, setTransitionActive] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -92,12 +96,15 @@ function AppContent() {
 
   return (
     <>
-      {!nameSubmitted && (
-        <NameEntryModal onSubmit={name => {
+      <NameEntryModal 
+        isOpen={!nameSubmitted} 
+        onSubmit={name => {
+          // Save name to both sessionStorage and localStorage for persistence
           sessionStorage.setItem('fbwordle_name', name);
+          localStorage.setItem('fbwordle_player', name);
           setPlayerName(name);
-        }} />
-      )}
+        }} 
+      />
       {nameSubmitted && (
         <div 
           className="app" 

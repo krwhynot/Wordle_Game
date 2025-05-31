@@ -1,58 +1,43 @@
-@use '../styles/variables';
-@use '../styles/mixins';
+// Component-specific keyboard style enhancements
+// Main keyboard styling is imported from global _keyboard.scss
 
+// This file contains only component-specific overrides and enhancements
 .keyboard {
-  margin-top: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
   .keyboard-row {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: var(--spacing-sm);
-
+    // Enhanced focus and hover states for accessibility
     .key {
-      flex: 1;
-      margin: 0 4px;
-      padding: var(--spacing-xs) 0;
-      border-radius: var(--border-radius-sm);
-      font-size: var(--font-size-md);
-      font-weight: var(--font-weight-bold);
-      text-transform: uppercase;
-      user-select: none;
-      border: 1px solid var(--color-text-disabled);
-      background-color: var(--color-surface-variant);
-      color: var(--color-text-primary);
-      transition: background-color var(--animation-spring), color var(--animation-spring);
-
-      &:active {
-        transform: scale(0.95);
+      cursor: pointer;
+      outline: none;
+      
+      // Add ripple effect on touch
+      position: relative;
+      overflow: hidden;
+      
+      &:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
       }
-
-      &.key-filled {
-        background-color: var(--color-surface);
-        border-color: var(--color-primary);
+      
+      &:hover {
+        filter: brightness(1.05);
       }
-
-      &.key-correct {
-        background-color: var(--color-correct);
-        border-color: var(--color-correct);
-        color: white;
-      }
-
-      &.key-present {
-        background-color: var(--color-present);
-        border-color: var(--color-present);
-        color: white;
-      }
-
-      &.key-absent {
-        background-color: var(--color-absent);
-        border-color: var(--color-absent);
-        color: var(--color-text-on-dark);
+      
+      // Special styling for action keys
+      &.large {
+        font-size: 0.85em;
+        letter-spacing: -0.5px;
       }
     }
   }
+}
+
+// Animations for keyboard interactions
+@keyframes keyPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.key:active {
+  animation: keyPress 100ms ease-out;
 }

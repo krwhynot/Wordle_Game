@@ -1,6 +1,7 @@
-import { useGame } from '../../contexts/GameContext';
+import { useGame } from '../../hooks/useGame';
 import type { TileState } from '../../types/game';
-// Styles are included via global.scss keyboard partial
+import './Keyboard.scss';
+// Main keyboard styling is in styles/_keyboard.scss, component-specific overrides here
 
 const rows: string[][] = [
   ['Q','W','E','R','T','Y','U','I','O','P'],
@@ -30,9 +31,10 @@ const Keyboard = () => {
             return (
               <button
                 key={key}
-                className={`key key-${state}`}
+                className={`key key-${state} ${(key === 'ENTER' || key === '⌫') ? 'large' : ''}`}
                 onClick={handleClick}
-                aria-label={key}
+                aria-label={key === '⌫' ? 'Backspace' : key}
+                data-testid={`key-${key === '⌫' ? 'backspace' : key.toLowerCase()}`}
               >
                 {key}
               </button>
