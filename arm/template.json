@@ -1,0 +1,106 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "defaultValue": "fbwordle",
+      "metadata": { "description": "Base name for resources" }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": { "description": "Resource location" }
+    },
+    "storageConnectionString": {
+      "type": "securestring",
+      "metadata": { "description": "Azure Storage connection string" }
+    },
+    "cosmosDbConnectionString": {
+      "type": "securestring",
+      "metadata": { "description": "Cosmos DB connection string" }
+    }
+  },
+  "variables": {
+    "functionAppName": "[concat(parameters('appName'), '-func') ]",
+    "appServicePlanName": "[concat(parameters('appName'), '-plan') ]",
+    "staticWebAppName": "[concat(parameters('appName'), '-static') ]",
+    "cosmosDbAccountName": "[concat(parameters('appName'), '-cosmos') ]",
+    "appInsightsName": "[concat(parameters('appName'), '-insights') ]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/staticSites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('staticWebAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "repositoryUrl": "<your-github-repo-url>",
+        "branch": "main",
+        "buildProperties": {
+          "appLocation": "client",
+          "apiLocation": "server",
+          "outputLocation": "build"
+        },
+        "cors": {
+          "allowedOrigins": ["*"]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": { "name": "Y1", "tier": "Dynamic" },
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('functionAppName')]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "cors": {
+            "allowedOrigins": ["*"]
+          },
+          "appSettings": [
+            { "name": "AzureWebJobsStorage", "value": "[parameters('storageConnectionString')]" },
+            { "name": "CosmosDbConnectionString", "value": "[parameters('cosmosDbConnectionString')]" },
+            { "name": "FUNCTIONS_EXTENSION_VERSION", "value": "~4" },
+            { "name": "FUNCTIONS_WORKER_RUNTIME", "value": "node" }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2021-04-15",
+      "name": "[variables('cosmosDbAccountName')]",
+      "location": "[parameters('location')]",
+      "kind": "MongoDB",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "locations": [
+          { "locationName": "[parameters('location')]", "failoverPriority": 0, "isZoneRedundant": false }
+        ],
+        "capabilities": [ { "name": "EnableMongo" } ],
+        "consistencyPolicy": { "defaultConsistencyLevel": "Session" }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('appInsightsName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": { "Application_Type": "web" }
+    }
+  ]
+}

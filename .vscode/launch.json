@@ -1,7 +1,6 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
     {
       "name": "Debug Frontend",
       "type": "chrome",
@@ -17,6 +16,14 @@
       "env": {
         "NODE_ENV": "development"
       }
+    },
+    {
+      "name": "Attach to Node Functions",
+      "type": "node",
+      "request": "attach",
+      "restart": true,
+      "port": 9229,
+      "preLaunchTask": "func: host start"
     }
   ],
   "compounds": [

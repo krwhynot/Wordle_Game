@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { GameProvider, useGame } from './contexts/GameContext';
+import { SessionProvider, useSession } from './contexts/SessionContext';
 import { AppBar, Container, Card } from './components/layout';
 import { Button } from './components/ui';
 import { GameBoard, Keyboard } from './components/game';
 import StatisticsModal from './components/game/StatisticsModal';
+import NameEntryModal from './components/game/NameEntryModal';
 import './styles/global.scss';
 
 // Inner component that uses the theme and game contexts
 function AppContent() {
+  const { session, setPlayerName } = useSession();
+  const nameSubmitted = Boolean(session.playerName);
   const [transitionActive, setTransitionActive] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -87,85 +91,97 @@ function AppContent() {
   };
 
   return (
-    <div 
-      className="app" 
-      tabIndex={0} 
-      onKeyDown={handleKeyDown}
-    >
-      {/* Theme transition overlay */}
-      <div className={`theme-transition-overlay ${transitionActive ? 'active' : ''}`} />
-      
-      <AppBar 
-        title="F&B Wordle" 
-        rightAction={
-          <button 
-            className="btn-icon" 
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            onClick={handleThemeToggle}
-          >
-            {themeIcon}
-          </button>
-        }
-      />
-      
-      <Container>
-        <div className="game-container">
-          <Card className="text-center" elevation={2}>
-            <h2>F&B Wordle</h2>
-            <p>A word guessing game featuring Food & Beverage industry terminology.</p>
-            
-            {/* Game Board */}
-            <GameBoard 
-              gameBoard={gameState.gameBoard}
-              isRevealing={isRevealing}
-              invalidRowIndex={invalidRowIndex}
-            />
-            
-            {/* Virtual keyboard */}
-            <Keyboard />
-            
-            {/* Game status and controls */}
-            <div className="game-controls">
-              {gameState.isGameOver && (
-                <div className="game-result">
-                  {gameState.isGameWon ? (
-                    <p className="success-message">Congratulations! You guessed the word!</p>
-                  ) : (
-                    <p className="failure-message">Game over! The word was {gameState.targetWord}</p>
-                  )}
-                  <Button 
-                    variant="primary" 
-                    onClick={() => resetGame()}
-                  >
-                    Play Again
-                  </Button>
-                </div>
-              )}
-            </div>
-          </Card>
-        </div>
-      </Container>
-      
-      {/* Statistics Modal */}
-      {showStats && (
-        <StatisticsModal
-          totalGames={totalGames}
-          winRate={winRate}
-          distribution={distribution}
-          onClose={() => setShowStats(false)}
-          onReset={handleStatsReset}
-        />
+    <>
+      {!nameSubmitted && (
+        <NameEntryModal onSubmit={name => {
+          sessionStorage.setItem('fbwordle_name', name);
+          setPlayerName(name);
+        }} />
       )}
-    </div>
+      {nameSubmitted && (
+        <div 
+          className="app" 
+          tabIndex={0} 
+          onKeyDown={handleKeyDown}
+        >
+          {/* Theme transition overlay */}
+          <div className={`theme-transition-overlay ${transitionActive ? 'active' : ''}`} />
+          
+          <AppBar 
+            title="F&B Wordle" 
+            rightAction={
+              <button 
+                className="btn-icon" 
+                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                onClick={handleThemeToggle}
+              >
+                {themeIcon}
+              </button>
+            }
+          />
+          
+          <Container>
+            <div className="game-container">
+              <Card className="text-center" elevation={2}>
+                <h2>F&B Wordle</h2>
+                <p>A word guessing game featuring Food & Beverage industry terminology.</p>
+                
+                {/* Game Board */}
+                <GameBoard 
+                  gameBoard={gameState.gameBoard}
+                  isRevealing={isRevealing}
+                  invalidRowIndex={invalidRowIndex}
+                />
+                
+                {/* Virtual keyboard */}
+                <Keyboard />
+                
+                {/* Game status and controls */}
+                <div className="game-controls">
+                  {gameState.isGameOver && (
+                    <div className="game-result">
+                      {gameState.isGameWon ? (
+                        <p className="success-message">Congratulations! You guessed the word!</p>
+                      ) : (
+                        <p className="failure-message">Game over! The word was {gameState.targetWord}</p>
+                      )}
+                      <Button 
+                        variant="primary" 
+                        onClick={() => resetGame()}
+                      >
+                        Play Again
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </Container>
+          
+          {/* Statistics Modal */}
+          {showStats && (
+            <StatisticsModal
+              totalGames={totalGames}
+              winRate={winRate}
+              distribution={distribution}
+              onClose={() => setShowStats(false)}
+              onReset={handleStatsReset}
+            />
+          )}
+        </div>
+      )}
+    </>
   );
 }
 
 function App() {
   return (
     <ThemeProvider>
-      <GameProvider>
-        <AppContent />
-      </GameProvider>
+      <SessionProvider initialName={sessionStorage.getItem('fbwordle_name') || ''}>
+        <GameProvider>
+          <AppContent />
+        </GameProvider>
+      </SessionProvider>
     </ThemeProvider>
   );
 }

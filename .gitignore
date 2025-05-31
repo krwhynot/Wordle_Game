@@ -60,7 +60,7 @@ staticwebapp.config.json.bak
 # IDE and Editor Files
 # --------------------
 # Visual Studio Code
-.vscode/
+
 !.vscode/extensions.json
 !.vscode/settings.json.example
 
