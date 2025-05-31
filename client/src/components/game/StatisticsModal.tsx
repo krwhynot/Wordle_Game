@@ -5,9 +5,10 @@ interface StatisticsModalProps {
   winRate: number;
   distribution: number[]; // counts for guesses 1-6
   onClose: () => void;
+  onReset: () => void;
 }
 
-const StatisticsModal: FC<StatisticsModalProps> = ({ totalGames, winRate, distribution, onClose }) => {
+const StatisticsModal: FC<StatisticsModalProps> = ({ totalGames, winRate, distribution, onClose, onReset }) => {
   const maxCount = Math.max(...distribution, 1);
   return (
     <div className="statistics-modal-overlay" onClick={onClose}>
@@ -33,7 +34,10 @@ const StatisticsModal: FC<StatisticsModalProps> = ({ totalGames, winRate, distri
             </div>
           ))}
         </div>
-        <button className="btn" onClick={onClose}>Close</button>
+        <div className="modal-actions">
+          <button className="btn btn-secondary" onClick={onReset}>Reset</button>
+          <button className="btn" onClick={onClose}>Close</button>
+        </div>
       </div>
     </div>
   );

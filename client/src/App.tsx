@@ -73,11 +73,18 @@ function AppContent() {
       });
       setShowStats(true);
     }
-  }, [gameState.isGameOver]);
+  }, [gameState.isGameOver, gameState.guessedWords.length, gameState.isGameWon]);
 
   const totalGames = stats.totalGames;
   const winRate = totalGames > 0 ? Math.round((stats.wins / totalGames) * 100) : 0;
   const distribution = stats.distribution;
+
+  // Handler to reset stored statistics
+  const handleStatsReset = () => {
+    const initialStats = { totalGames: 0, wins: 0, distribution: Array(maxAttempts).fill(0) };
+    localStorage.removeItem('fbwordle_stats');
+    setStats(initialStats);
+  };
 
   return (
     <div 
@@ -146,6 +153,7 @@ function AppContent() {
           winRate={winRate}
           distribution={distribution}
           onClose={() => setShowStats(false)}
+          onReset={handleStatsReset}
         />
       )}
     </div>

@@ -67,3 +67,15 @@
   margin: 0 auto;
   margin-top: var(--spacing-lg);
 }
+
+/* Reset and Close buttons side by side */
+.statistics-modal .modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-lg);
+}
+
+.statistics-modal .btn-secondary {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+}
