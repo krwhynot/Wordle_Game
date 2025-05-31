@@ -10,6 +10,15 @@ interface StatisticsModalProps {
 
 const StatisticsModal: FC<StatisticsModalProps> = ({ totalGames, winRate, distribution, onClose, onReset }) => {
   const maxCount = Math.max(...distribution, 1);
+
+  // Confirm then reset stats
+  const handleResetClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to reset all statistics?')) {
+      onReset();
+    }
+  };
+
   return (
     <div className="statistics-modal-overlay" onClick={onClose}>
       <div className="statistics-modal" onClick={e => e.stopPropagation()}>
@@ -35,7 +44,7 @@ const StatisticsModal: FC<StatisticsModalProps> = ({ totalGames, winRate, distri
           ))}
         </div>
         <div className="modal-actions">
-          <button className="btn btn-secondary" onClick={onReset}>Reset</button>
+          <button className="btn btn-secondary" onClick={handleResetClick}>Reset</button>
           <button className="btn" onClick={onClose}>Close</button>
         </div>
       </div>
