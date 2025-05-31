@@ -1,6 +1,28 @@
 // Game board styles
 @use 'variables';
 @use 'mixins';
+@use 'breakpoints';
+
+// High contrast mode styles for game board
+[data-high-contrast="true"] {
+  .game-board {
+    // Stronger border and more defined shadow
+    border: 2px solid #000000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    
+    // Increase spacing between rows for better visibility
+    .row {
+      margin-bottom: 12px;
+      
+      // Add subtle outline to active row for better focus
+      &-active {
+        outline: 2px dashed var(--focus-outline-color);
+        outline-offset: 4px;
+        border-radius: var(--border-radius-sm);
+      }
+    }
+  }
+}
 
 // Row styles
 .row {
@@ -41,6 +63,24 @@
   // Dark mode adjustments
   [data-theme="dark"] & {
     box-shadow: var(--elevation-2);
+  }
+  
+  // Responsive adjustments for game board layout [SF]
+  @include breakpoints.media-max-sm {
+    .game-board {
+      padding: var(--spacing-sm);
+      width: 100%;
+      
+      .row {
+        margin-bottom: var(--spacing-xs);
+      }
+    }
+  }
+  @include breakpoints.media-max-md {
+    .game-board {
+      padding: var(--spacing-md);
+      max-width: 90%;
+    }
   }
 }
 

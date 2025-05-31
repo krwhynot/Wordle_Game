@@ -1,0 +1,8 @@
+{
+  "name": "fbwordle-functions",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "func start --cors \"*\""
+  },
+  "dependencies": {}
+}

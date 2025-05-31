@@ -8,17 +8,22 @@ interface RowProps {
   isComplete: boolean;
   isRevealing?: boolean;
   isInvalidWord?: boolean;
+  rowIndex?: number;
+  totalRows?: number;
 }
 
 /**
  * Row component representing a word guess in the Wordle game
+ * Accessible implementation with proper ARIA attributes for screen readers
  */
 const Row: FC<RowProps> = ({ 
   tiles, 
   isActive, 
   isComplete, 
   isRevealing = false,
-  isInvalidWord = false
+  isInvalidWord = false,
+  rowIndex = 1,
+  totalRows = 6
 }) => {
   // Apply appropriate row classes based on state
   const rowClasses = [
@@ -26,17 +31,37 @@ const Row: FC<RowProps> = ({
     isActive ? 'row-active' : '',
     isComplete ? 'row-complete' : '',
   ].filter(Boolean).join(' ');
+
+  // Create accessible label for the row
+  const getRowLabel = () => {
+    if (isComplete) {
+      const word = tiles.map(tile => tile.letter).join('');
+      return `Row ${rowIndex} of ${totalRows}: Completed guess "${word}"`;
+    }
+    if (isActive) {
+      return `Row ${rowIndex} of ${totalRows}: Current guess row`;
+    }
+    return `Row ${rowIndex} of ${totalRows}: Empty guess row`;
+  };
   
   return (
-    <div className={rowClasses}>
-      {tiles.map((tile, index) => (
+    <div 
+      className={rowClasses}
+      role="row"
+      aria-label={getRowLabel()}
+      aria-rowindex={rowIndex}
+      aria-live={isActive ? 'polite' : 'off'}
+    >
+      {tiles.map((tile, tileIndex) => (
         <Tile
-          key={index}
+          key={tileIndex}
           letter={tile.letter}
           state={tile.state}
-          position={index}
-          isRevealing={isRevealing && isComplete}
+          position={tileIndex}
+          isRevealing={isRevealing}
           isInvalid={isInvalidWord}
+          rowIndex={rowIndex + 1}
+          colIndex={tileIndex + 1}
         />
       ))}
     </div>

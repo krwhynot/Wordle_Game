@@ -3,6 +3,49 @@
 @use 'animations';
 @use 'mixins';
 
+// High contrast mode tile styles
+[data-high-contrast="true"] {
+  .tile {
+    // Stronger borders for all tiles in high contrast mode
+    border-width: 3px;
+    
+    // Empty tile with more visible border
+    &-empty {
+      border-color: #555555;
+    }
+    
+    // Filled tile with stronger border
+    &-filled {
+      border-color: #000000;
+    }
+    
+    // Enhanced contrast for correct tiles
+    &-correct {
+      background-color: var(--color-correct);
+      border-color: #000000;
+      color: #FFFFFF;
+      font-weight: 900;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    }
+    
+    // Enhanced contrast for present tiles
+    &-present {
+      background-color: var(--color-present);
+      border-color: #000000;
+      color: #000000;
+      font-weight: 900;
+    }
+    
+    // Enhanced contrast for absent tiles
+    &-absent {
+      background-color: var(--color-absent);
+      border-color: #000000;
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+  }
+}
+
 .tile {
   // Base tile styles
   display: flex;

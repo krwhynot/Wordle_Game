@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "value": "fbwordle"
+    },
+    "environment": {
+      "value": "test"
+    },
+    "customDomainName": {
+      "value": "test-wordle.kjrcloud.com"
+    },
+    "repository": {
+      "value": "https://github.com/krwhynot/Wordle_Game"
+    },
+    "branch": {
+      "value": "test"
+    },
+    "cosmosDbMaxThroughput": {
+      "value": 400
+    }
+  }
+}
