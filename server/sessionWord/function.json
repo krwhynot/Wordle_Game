@@ -1,0 +1,36 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get"],
+      "route": "sessionWord/{sessionId?}"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "sessionDocumentIn",
+      "databaseName": "WordleDB",
+      "collectionName": "Sessions",
+      "id": "{sessionId}",
+      "partitionKey": "{sessionId}",
+      "connectionStringSetting": "COSMOSDB_CONNECTION_STRING"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "out",
+      "name": "sessionDocumentOut",
+      "databaseName": "WordleDB",
+      "collectionName": "Sessions",
+      "createIfNotExists": true,
+      "connectionStringSetting": "COSMOSDB_CONNECTION_STRING"
+    }
+  ]
+}

@@ -66,6 +66,17 @@
   }
   
   // Responsive adjustments for game board layout [SF]
+  @include breakpoints.media-max-xs {
+    .game-board {
+      padding: var(--spacing-xs);
+      width: 100%;
+      max-width: 300px; // A reasonable max-width for very small screens
+      
+      .row {
+        margin-bottom: var(--spacing-xxs);
+      }
+    }
+  }
   @include breakpoints.media-max-sm {
     .game-board {
       padding: var(--spacing-sm);

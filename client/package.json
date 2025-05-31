@@ -7,11 +7,16 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "preview": "vite preview",
+    "e2e": "npx playwright test"
   },
   "dependencies": {
     "framer-motion": "^12.15.0",
     "react": "^19.1.0",
+    "@microsoft/applicationinsights-react-js": "^1.0.0",
+    "@microsoft/applicationinsights-web": "^3.2.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
@@ -31,6 +36,11 @@
     "prettier": "^3.5.3",
     "sass": "^1.89.0",
     "typescript": "~5.8.3",
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/react": "^16.0.0",
+    "@vitest/coverage-v8": "^2.0.5",
+    "jsdom": "^24.1.1",
+    "vitest": "^2.0.5",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"
   }

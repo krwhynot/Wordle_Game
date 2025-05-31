@@ -5,9 +5,15 @@
  * In a production environment, this would store data in Azure Cosmos DB.
  */
 const { isValidWord } = require('../shared/fbWordlist');
+const appInsights = require('applicationinsights');
 
-// In-memory storage for game results (would be replaced by Azure Cosmos DB)
-const gameResults = [];
+if (process.env.APPINSIGHTS_CONNECTION_STRING) {
+    appInsights.setup(process.env.APPINSIGHTS_CONNECTION_STRING)
+        .setSendLiveMetrics(true)
+        .start();
+}
+
+
 
 module.exports = async function (context, req) {
     context.log('Processing game result submission');
@@ -61,14 +67,14 @@ module.exports = async function (context, req) {
             submittedAt: new Date().toISOString()
         };
         
-        gameResults.push(gameResult);
-        context.log(`Game result saved: ${gameResult.id}`);
+        context.bindings.outputDocument = gameResult;
+        context.log(`Game result saved to Cosmos DB: ${gameResult.id}`);
         
         return {
             status: 200,
             body: { 
                 success: true,
-                message: "Game result saved successfully" 
+                message: "Game result saved successfully to Cosmos DB" 
             }
         };
     } catch (error) {
