@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { SessionContext, type Session, type SessionContextType } from './SessionContextDefinitions';
+import { SessionContext, type Session } from './SessionContextDefinitions';
 
 export const SessionProvider: React.FC<{ children: ReactNode; initialName?: string }> = ({ children, initialName = '' }) => {
   const [session, setSession] = useState<Session>({
@@ -29,4 +29,4 @@ export const SessionProvider: React.FC<{ children: ReactNode; initialName?: stri
   );
 };
 
-// No need for default export as we're using named exports
+// Only export the provider component to comply with Fast Refresh requirements

@@ -1,24 +1,10 @@
 import { useState, useEffect, useCallback, type FC, type ReactNode } from 'react';
 import { useSession } from '../hooks/useSession';
-import type { TileState } from '../types/game';
-import { GameContext, type GameContextType } from './GameContextDefinitions';
-import type { GameState } from '../types/game';
+import type { GameState, TileState } from '../types/game';
+import { GameContext } from './GameContextDefinitions';
 import { createInitialGameState } from '../utils/gameHelpers';
 import { validateWord, getDailyWord } from '../services/wordService';
 import { submitGameResult, type GameResult } from '../services/statsService';
-
-// Create the context
-const GameContext = GameContext.createContext<GameContextType>({
-  gameState: createInitialGameState(),
-  addLetter: () => {},
-  removeLetter: () => {},
-  submitGuess: async () => false,
-  resetGame: () => {},
-  fetchDailyWord: async () => false,
-  isRevealing: false,
-  invalidRowIndex: -1,
-  errorMessage: null
-});
 
 // Provider component
 export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {

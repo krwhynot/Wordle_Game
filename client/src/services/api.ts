@@ -6,9 +6,9 @@
  * and request/response formatting.
  */
 
-// API configuration
-const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:7071';
-const USE_MOCK_API = import.meta.env.VITE_APP_ENABLE_MOCK_API === 'true';
+// API configuration from environment variables
+const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:7071/api';
+// USE_MOCK_API is handled in individual service files
 
 // Common headers for API requests
 const DEFAULT_HEADERS = {
