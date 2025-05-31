@@ -14,9 +14,13 @@
     margin-bottom: var(--spacing-sm);
 
     .key {
-      flex: 1;
-      margin: 0 4px;
-      padding: var(--spacing-xs) 0;
+      flex: none;
+      width: 62px;
+      height: 62px;
+      margin: var(--spacing-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: var(--border-radius-sm);
       font-size: var(--font-size-md);
       font-weight: var(--font-weight-bold);
@@ -58,5 +62,24 @@
         color: var(--color-text-on-dark);
       }
     }
+  }
+}
+
+// Responsive key sizing to prevent overflow
+@media (max-width: 600px) {
+  .keyboard-row .key {
+    width: 48px;
+    height: 48px;
+    margin: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 360px) {
+  .keyboard-row .key {
+    width: 36px;
+    height: 36px;
+    margin: 2px;
+    font-size: var(--font-size-xs);
   }
 }
