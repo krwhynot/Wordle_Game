@@ -51,3 +51,13 @@
   font-size: var(--font-size-sm);
   text-align: center;
 }
+
+.name-modal button.btn {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+}
+
+.name-modal button.btn:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.8);
+}
