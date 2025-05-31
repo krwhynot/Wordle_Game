@@ -4,7 +4,7 @@ import App from './App.tsx';
 // No need to import index.css as we're using our global.scss
 import * as serviceWorker from './serviceWorker';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import { ReactPlugin, with  AITracking } from '@microsoft/applicationinsights-react-js';
+import { ReactPlugin, withAITracking } from '@microsoft/applicationinsights-react-js';
 
 const reactPlugin = new ReactPlugin();
 const appInsights = new ApplicationInsights({
