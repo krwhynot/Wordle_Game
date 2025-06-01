@@ -130,7 +130,7 @@ const getLocalGameResults = (): GameResult[] => {
 /**
  * Loads player statistics from localStorage
  */
-const loadStats = (): PlayerStatistics => {
+export const loadStats = (): PlayerStatistics => {
   try {
     const savedStats = localStorage.getItem(STATS_STORAGE_KEY);
     return savedStats ? JSON.parse(savedStats) as PlayerStatistics : { ...DEFAULT_STATS };
@@ -287,3 +287,20 @@ export const resetStatistics = (): void => {
 
 // Export the default stats for easy importing
 export { DEFAULT_STATS as defaultStats };
+
+/**
+ * Saves a game result and updates statistics
+ */
+export const saveGameResult = async (result: GameResult): Promise<void> => {
+  try {
+    // Update local statistics
+    updateLocalStats(result);
+    
+    // Try to sync with backend (non-blocking)
+    await syncGameResult(result).catch(error => {
+      console.warn('Failed to sync game result to backend:', error);
+    });
+  } catch (error) {
+    console.error('Error saving game result:', error);
+  }
+};
