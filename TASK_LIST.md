@@ -26,9 +26,9 @@ This document tracks the progress of tasks for the F&B Wordle Game project, foll
 - [x] Build virtual keyboard component
 - [x] Implement animations for game interactions
 - [x] Create statistics modal component
-- [x] Build settings panel and help screens
+- [ ] Build settings panel and help screens
 - [x] Implement theme support (light/dark mode)
-- [x] Add PWA capabilities (offline play, app installation, improved caching)
+- [ ] Add PWA capabilities (offline play, app installation, improved caching)
 
 ## Game Logic and State Management
 
@@ -78,7 +78,7 @@ We have made significant progress on core features. The immediate next steps are
 - [2025-06-01] Created utility functions for game logic, word validation, and storage
 - [2025-06-01] Implemented statistics service for tracking player performance
 - [2025-06-01] Added custom React hooks for localStorage state management
-- [2025-06-01] Integrated Settings and Help modals into the UI
+- [ ] Integrated Settings and Help modals into the UI (Needs Verification)
 - [2025-06-01] Implemented Error Boundary for robust error handling
 - [2025-06-01] Created client and server .env files for configuration
 - [2025-06-01] Implemented Cosmos DB integration for game results storage
@@ -89,4 +89,4 @@ We have made significant progress on core features. The immediate next steps are
 - [2025-06-01] Set up Vitest and React Testing Library for frontend testing
 - [2025-06-01] Implemented initial unit tests for game logic
 - [2025-06-01] Implemented initial component tests for UI elements
-- [2025-06-01] Added PWA capabilities for offline play and caching
+- [ ] Added PWA capabilities for offline play and caching (Needs serviceWorker.ts and icons)
