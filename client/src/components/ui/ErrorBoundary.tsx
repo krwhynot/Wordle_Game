@@ -4,7 +4,8 @@
  * Catches JavaScript errors in child component tree and displays a fallback UI.
  * Prevents the entire application from crashing when errors occur.
  */
-import { Component, ErrorInfo, ReactNode } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
+import { Component } from 'react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

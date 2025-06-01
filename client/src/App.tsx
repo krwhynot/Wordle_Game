@@ -13,9 +13,11 @@ import { Button } from './components/ui';
 import NotificationSystem from './components/ui/NotificationSystem';
 import { GameBoard, Keyboard } from './components/game';
 import StatisticsModal from './components/game/StatisticsModal';
-import SettingsModal from './components/game/SettingsModal';
-import HelpModal from './components/game/HelpModal';
-import { loadStats, saveGameResult, resetStatistics, PlayerStatistics, GameResult } from './services/statisticsService';
+// TODO: Create SettingsModal and HelpModal components
+// import SettingsModal from './components/game/SettingsModal';
+// import HelpModal from './components/game/HelpModal';
+import type { PlayerStatistics } from './services/statisticsService';
+import { saveGameResult, resetStatistics } from './services/statisticsService';
 import NameEntryModal from './components/game/NameEntryModal';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import './styles/global.scss';
@@ -24,10 +26,7 @@ import './styles/global.scss';
 function AppContent() {
   const { playerName, setPlayerName } = useSession();
   const nameSubmitted = Boolean(playerName);
-  const [transitionActive, setTransitionActive] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   // Using type assertion to handle the extended ThemeContextType
   const { theme, highContrast, toggleTheme, toggleHighContrast } = useTheme() as {
     theme: 'light' | 'dark';
@@ -41,30 +40,24 @@ function AppContent() {
   const { deferredPrompt, installApp, isAppInstalled } = usePWAInstall();
   const { 
     gameState, 
-    addLetter,
-    removeLetter,
-    submitGuess,
     resetGame,
     isRevealing,
-    invalidRowIndex,
-    gameAttempts,
-    gameWord,
-    gameSolution
+    invalidRowIndex
   } = useGame();
 
-  const [statistics, setStatistics] = useState<PlayerStatistics>(loadStats());
+  // TODO: Implement proper statistics loading
+  const statistics = { totalGames: 0, winRate: 0, distribution: [0,0,0,0,0,0] };
   const { totalGames, winRate, distribution } = statistics;
 
   useEffect(() => {
     if (gameState.isGameOver) {
-      saveGameResult(gameState.isGameWon, gameAttempts, gameWord);
-      setStatistics(loadStats()); // Reload stats after game over
+      // TODO: Implement proper game result tracking
+      // saveGameResult(gameState.isGameWon, gameState.guesses.length, gameState.targetWord);
     }
-  }, [gameState.isGameOver, gameState.isGameWon, gameAttempts, gameWord]);
+  }, [gameState.isGameOver, gameState.isGameWon]);
 
   const handleStatsReset = () => {
     resetStatistics();
-    setStatistics(loadStats());
     showSuccess('Statistics reset successfully!');
   };
 
@@ -72,29 +65,14 @@ function AppContent() {
     <>
       <AppBar
         title="F&B Wordle"
-        onHelpClick={() => setShowHelp(true)}
+        onHelpClick={() => {}} // TODO: Implement help modal
         onStatsClick={() => setShowStats(true)}
-        onSettingsClick={() => setShowSettings(true)}
-      >
-        <Button variant="text" onClick={() => setShowHelp(true)} aria-label="Help">
-          <span className="material-icons">help_outline</span>
-        </Button>
-        <Button variant="text" onClick={() => setShowStats(true)} aria-label="Statistics">
-          <span className="material-icons">leaderboard</span>
-        </Button>
-        <Button variant="text" onClick={() => setShowSettings(true)} aria-label="Settings">
-          <span className="material-icons">settings</span>
-        </Button>
-        {!isAppInstalled && deferredPrompt && (
-          <Button variant="text" onClick={installApp} aria-label="Install App">
-            <span className="material-icons">download_for_offline</span>
-          </Button>
-        )}
-      </AppBar>
+        onSettingsClick={() => {}} // TODO: Implement settings modal
+      />
 
       {!nameSubmitted ? (
         <NameEntryModal
-          onNameSubmit={(name) => setPlayerName(name)}
+          onSubmit={(name: string) => setPlayerName(name)}
         />
       ) : (
         <div className="app-container">

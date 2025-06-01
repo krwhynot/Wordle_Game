@@ -17,11 +17,39 @@ self.addEventListener('install', (event: any) => {
         return cache.addAll(urlsToCache);
       })
   );
+
+// Export register function for use in main.tsx
+export function register() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    });
+  }
+}
+
+export function unregister() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        registration.unregister();
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+  }
+}
 });
 
-self.addEventListener('fetch', (event: any) => {
-  declare var process: { env: { VITE_API_BASE_URL: string } };
+declare var process: { env: { VITE_API_BASE_URL: string } };
 const apiBaseUrl = process.env.VITE_API_BASE_URL;
+
+self.addEventListener('fetch', (event: any) => {
 
   // For API calls, try network first, then fallback to cache
   if (event.request.url.startsWith(apiBaseUrl)) {

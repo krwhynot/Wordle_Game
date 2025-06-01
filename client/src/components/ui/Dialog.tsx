@@ -4,7 +4,8 @@
  * A reusable dialog/modal component with accessibility features.
  * Provides backdrop, focus trapping, and keyboard navigation.
  */
-import { useEffect, useRef, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 interface DialogProps {
